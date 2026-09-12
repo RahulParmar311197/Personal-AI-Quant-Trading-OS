@@ -138,15 +138,14 @@ class RegimeEngine:
         )
 
     def classify_series(self, features: list[TechnicalFeatures]) -> list[RegimeClassification]:
-        """Classify each feature row independently without future information."""
-        ordered = sorted(features, key=lambda item: item.event_time)
+        """Classify each feature row in caller-supplied order without future data."""
         previous: datetime | None = None
-        for item in ordered:
+        for item in features:
             timestamp = item.event_time.astimezone(timezone.utc)
             if previous is not None and timestamp <= previous:
                 raise ValueError("feature timestamps must be strictly increasing")
             previous = timestamp
-        return [self.classify(item) for item in ordered]
+        return [self.classify(item) for item in features]
 
     def _trend_score(self, features: TechnicalFeatures) -> Decimal:
         if features.returns is None:
