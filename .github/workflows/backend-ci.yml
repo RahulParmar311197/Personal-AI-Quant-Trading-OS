@@ -50,4 +50,19 @@ jobs:
         run: python -m pytest 24_TESTING/integration -q
 
       - name: Lint
-        run: python -m ruff check 20_API 24_TESTING
+        id: lint
+        shell: bash
+        run: |
+          set +e
+          python -m ruff check 20_API 24_TESTING --output-format=json > ruff-report.json
+          status=$?
+          cat ruff-report.json
+          exit $status
+
+      - name: Upload lint diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ruff-report
+          path: ruff-report.json
+          if-no-files-found: warn
