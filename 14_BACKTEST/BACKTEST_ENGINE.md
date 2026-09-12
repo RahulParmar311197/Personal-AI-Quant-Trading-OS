@@ -28,10 +28,13 @@ This is the primary V1 look-ahead control.
 - LONG/SHORT signals
 - quantity explicitly supplied by strategy
 - next-bar-open execution
-- configurable basis-point slippage
+- deterministic adverse slippage
+- configurable half-spread
 - configurable basis-point fees
 - gross and net P&L
 - immutable fills/trades/results
+
+The cost model applies slippage plus half the configured spread against the trader's execution price. Fees are calculated from executed notional.
 
 ## Data integrity
 
@@ -39,12 +42,11 @@ Bars must have timezone-aware, strictly increasing timestamps. Future-dated sign
 
 ## Deliberately deferred
 
-The following are separate tasks and must not be assumed to exist merely because the V1 loop exists:
+The following remain separate tasks:
 
 - stop-loss/target simulation
 - intrabar execution policy
 - partial fills
-- bid/ask spread model
 - market impact
 - order queueing
 - portfolio-level margin
