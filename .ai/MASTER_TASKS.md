@@ -37,8 +37,15 @@
 | G7-002 | P1 | Add observability and audit trail | BACKLOG |
 | G7-003 | P0 | Production acceptance and controlled rollout | BACKLOG |
 
+## Branch policy
+
+- `main` is the sole development and integration branch.
+- All future implementation commits must be made directly on `main`.
+- `framework/bootstrap` is no longer an active development branch.
+- Do not create or use feature branches for this project unless the user explicitly changes this policy.
+
 ## Current implementation sequence
-1. Obtain a clean PostgreSQL CI validation result for the durable execution repository and migration 0004.
+1. Obtain a clean PostgreSQL CI validation result on `main` for the durable execution repository and migration 0004.
 2. Run the Upstox sandbox acceptance harness only with explicitly supplied sandbox credentials.
 3. Complete and validate durable execution audit/fill history and integrate provider fill ingestion.
 4. Keep live trading disabled until controlled production acceptance criteria are satisfied.
