@@ -22,7 +22,7 @@
 | G4-004 | P1 | Add Monte Carlo analysis | IN_PROGRESS |
 | G5-001 | P0 | Create strategy registry and base interface | IN_PROGRESS |
 | G5-002 | P0 | Create regime engine | IN_PROGRESS |
-| G5-003 | P0 | Create decision engine | BACKLOG |
+| G5-003 | P0 | Create decision engine | IN_PROGRESS |
 | G5-004 | P0 | Create independent risk engine | BACKLOG |
 | G6-001 | P1 | Add ML training/evaluation pipeline | BACKLOG |
 | G6-002 | P0 | Create paper-trading simulator | BACKLOG |
