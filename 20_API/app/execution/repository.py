@@ -14,6 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.brokers.contracts import BrokerFill
 from app.execution.history import FillIngestRequest
 from app.execution.lifecycle import (
     DurableOrderKey,
@@ -44,6 +45,13 @@ class ExecutionOrderRepository:
 
     def get(self, client_order_id: str) -> ExecutionOrder | None:
         return self.session.get(ExecutionOrder, client_order_id)
+
+    def get_by_broker_order_id(self, broker_order_id: str) -> ExecutionOrder | None:
+        if not broker_order_id.strip():
+            raise ValueError("broker_order_id cannot be empty")
+        return self.session.scalar(
+            select(ExecutionOrder).where(ExecutionOrder.broker_order_id == broker_order_id)
+        )
 
     def reserve(
         self,
@@ -86,9 +94,6 @@ class ExecutionOrderRepository:
             last_message="order identity reserved",
         )
 
-        # Establish the SAVEPOINT before the INSERT so an IntegrityError does
-        # not invalidate the caller's outer transaction. This is important when
-        # execution shares a transaction with risk/audit bookkeeping.
         nested = self.session.begin_nested()
         try:
             self.session.add(row)
@@ -164,6 +169,31 @@ class ExecutionOrderRepository:
         )
         self.session.flush()
         return row
+
+    def ingest_broker_fill(self, fill: BrokerFill, *, source: str) -> ExecutionFill:
+        """Resolve a normalized provider fill to its durable order and ingest it.
+
+        Provider fill discovery intentionally does not carry local client-order
+        IDs. The durable broker-order mapping is the authoritative join key.
+        Unknown broker orders fail closed rather than creating orphan fills.
+        """
+        order = self.get_by_broker_order_id(fill.broker_order_id)
+        if order is None:
+            raise KeyError(f"execution order not found for broker order: {fill.broker_order_id}")
+        return self.ingest_fill(
+            FillIngestRequest(
+                broker_fill_id=fill.broker_fill_id,
+                client_order_id=order.client_order_id,
+                broker_order_id=fill.broker_order_id,
+                instrument_id=fill.instrument_id,
+                side=fill.side,
+                quantity=fill.quantity,
+                fill_price=fill.price,
+                fee=fill.fee,
+                event_time=fill.event_time,
+                source=source,
+            )
+        )
 
     def ingest_fill(self, request: FillIngestRequest) -> ExecutionFill:
         """Persist one broker fill exactly once and advance order fill state.
