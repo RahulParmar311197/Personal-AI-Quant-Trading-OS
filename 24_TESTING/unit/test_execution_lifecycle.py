@@ -28,6 +28,16 @@ def test_order_state_machine_allows_normal_submission_and_fill() -> None:
     assert machine.is_terminal(state.status)
 
 
+def test_order_state_machine_allows_unknown_from_created_after_ambiguous_submission() -> None:
+    machine = OrderStateMachine()
+    state = machine.apply(
+        OrderLifecycleState("ord-ambiguous"),
+        OrderLifecycleEvent("ord-ambiguous", "UNKNOWN", NOW, message="broker timeout"),
+    )
+    assert state.status == "UNKNOWN"
+    assert state.last_message == "broker timeout"
+
+
 def test_state_machine_rejects_illegal_transition() -> None:
     with pytest.raises(InvalidOrderTransition):
         OrderStateMachine().apply(
