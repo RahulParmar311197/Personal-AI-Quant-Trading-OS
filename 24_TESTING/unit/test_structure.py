@@ -33,7 +33,7 @@ def test_swing_high_requires_right_side_confirmation() -> None:
 
 def test_structure_classification_distinguishes_higher_and_lower_swings() -> None:
     bars = [bar(0, 100, 90, 95), bar(1, 110, 91, 105), bar(2, 120, 100, 115),
-            bar(3, 108, 95, 100), bar(4, 112, 94, 105), bar(5, 100, 88, 92),
+            bar(3, 108, 94, 100), bar(4, 112, 96, 105), bar(5, 100, 88, 92),
             bar(6, 105, 90, 100)]
     swings = detect_swings(bars, left_bars=1, right_bars=1)
     events = classify_structure(swings)
