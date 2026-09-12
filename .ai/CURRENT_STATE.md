@@ -26,6 +26,7 @@ Execution/broker hardening is progressing on `main` with live trading still disa
 - G4-003 chronological walk-forward validation contracts and tests.
 - G4-004 bootstrap Monte Carlo outcome robustness analysis and tests.
 - G5 strategy/regime/decision/risk foundations.
+- G5-003 decision safety: high-volatility trading is blocked by default and requires explicit configuration to opt in.
 - G6 ML training/evaluation contracts, paper-trading simulator, provider-neutral broker contract and first Upstox adapter.
 - Execution hardening V1: normalized order lifecycle state machine, durable SQL execution-order schema/migration, idempotency contract, fail-closed order/position reconciliation service and orchestration.
 - Upstox reconciliation discovery: adapter implements current-day order-book listing through `/v2/order/retrieve-all`, enabling broker-only order discovery rather than only targeted local-order lookups.
@@ -35,9 +36,10 @@ Execution/broker hardening is progressing on `main` with live trading still disa
 - G6-004-H4 sandbox acceptance harness: opt-in integration test, environment-only credentials, sandbox lifecycle documentation and CI skip-by-default integration stage.
 - G6-004-H5 durable execution audit events and fill persistence, normalized broker-fill discovery, durable broker-order resolution, idempotent fill ingestion, lifecycle advancement and replay/conflict tests.
 - PostgreSQL migration 0004 and transactional execution-repository validation passed in GitHub Actions.
-- Backend unit/database tests, broker integration harness, and Ruff lint all passed in the clean validation run.
+- Backend unit/database tests, broker integration harness, and Ruff lint passed in the clean execution validation run.
 
 ## In progress
+- Latest decision test correction committed; GitHub Actions must validate the corrected high-volatility opt-in assertion.
 - Upstox sandbox end-to-end acceptance remains pending because no sandbox credential has been supplied; the harness is ready.
 - G6-004-H1 remaining hardening: durable local position/reconciliation state and execution exception-path handling has been implemented; final task-state normalization remains.
 
