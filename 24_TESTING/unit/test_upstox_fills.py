@@ -2,12 +2,17 @@ from decimal import Decimal
 
 import pytest
 
-from app.brokers.contracts import BrokerOrderRequest
 from app.brokers.upstox import UpstoxAdapter, UpstoxConfig
 
 
 def make_adapter(responses: dict[str, dict]) -> UpstoxAdapter:
-    def transport(method: str, url: str, headers: dict[str, str], body: bytes | None, timeout: float):
+    def transport(
+        method: str,
+        url: str,
+        headers: dict[str, str],
+        body: bytes | None,
+        timeout: float,
+    ):
         for path, response in responses.items():
             if path in url:
                 return 200, response
