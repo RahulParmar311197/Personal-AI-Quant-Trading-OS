@@ -1,0 +1,998 @@
+# AI QUANT TRADING OS — MASTER SESSION CONTINUATION PROMPT
+
+You are continuing my ongoing project:
+
+**Personal AI Quant Trading OS**
+
+GitHub repository:
+
+**RahulParmar311197/Personal-AI-Quant-Trading-OS**
+
+## PRIMARY INSTRUCTION
+
+Continue the project from the **actual current GitHub repository state**.
+
+Do NOT restart the project.
+Do NOT recreate completed work.
+Do NOT simplify the architecture.
+Do NOT replace my framework with another framework.
+Do NOT ask me to repeat information that can be recovered from the repository, GitHub history, project state files, or previous work.
+
+Your job is to:
+
+**INSPECT → UNDERSTAND → IDENTIFY CURRENT STATE → FIND NEXT PENDING TASK → IMPLEMENT → TEST → VALIDATE → DOCUMENT → UPDATE STATE → COMMIT → CONTINUE**
+
+If the current task is safely implementable, execute it rather than merely explaining what should be done.
+
+---
+
+# 1. CANONICAL PROJECT FRAMEWORK
+
+The following framework is FROZEN and MUST remain the canonical project structure.
+
+Do not remove, rename, replace, or fundamentally reorganize it.
+
+```text
+ai-trading-platform/
+│
+├── README.md
+├── LICENSE
+├── CHANGELOG.md
+├── Makefile
+├── .gitignore
+├── .env.example
+│
+├── VIBE_CODING_MASTER.md
+│
+├── .ai/
+│   ├── SYSTEM.md
+│   ├── PROJECT_CONTEXT.md
+│   ├── PRODUCT_VISION.md
+│   ├── RULES.md
+│   ├── CODING_RULES.md
+│   ├── ARCHITECTURE_RULES.md
+│   ├── SECURITY_RULES.md
+│   ├── TESTING_RULES.md
+│   ├── TRADING_RULES.md
+│   ├── DATA_RULES.md
+│   ├── AI_RULES.md
+│   ├── BROKER_RULES.md
+│   ├── RISK_RULES.md
+│   ├── AGENT_WORKFLOW.md
+│   │
+│   ├── CURRENT_STATE.md
+│   ├── MASTER_TASKS.md
+│   ├── COMPLETED.md
+│   ├── PENDING.md
+│   ├── BLOCKED.md
+│   ├── BUGS.md
+│   ├── TECH_DEBT.md
+│   ├── DECISIONS.md
+│   ├── CHANGE_POLICY.md
+│   └── DEFINITION_OF_DONE.md
+│
+├── 00_DISCOVERY/
+├── 01_REQUIREMENTS/
+├── 02_PRODUCT/
+├── 03_ARCHITECTURE/
+├── 04_MARKET_DATA/
+├── 05_MARKET_ANALYSIS/
+├── 06_OPTIONS/
+├── 07_CONTEXT/
+├── 08_FEATURES/
+├── 09_REGIME/
+├── 10_STRATEGIES/
+├── 11_AI_ML/
+├── 12_DECISION/
+├── 13_RISK/
+├── 14_BACKTEST/
+├── 15_PAPER_TRADING/
+├── 16_EXECUTION/
+├── 17_BROKERS/
+├── 18_PORTFOLIO/
+├── 19_TRADE_JOURNAL/
+├── 20_API/
+├── 21_FRONTEND/
+├── 22_DATABASE/
+├── 23_DATA_PIPELINES/
+├── 24_TESTING/
+├── 25_SECURITY/
+├── 26_OBSERVABILITY/
+├── 27_DEVOPS/
+├── 28_OPERATIONS/
+├── 29_DOCUMENTATION/
+└── 30_RELEASE/
+
+```
+
+The COMPLETE detailed framework supplied previously by me remains authoritative.
+
+If implementation requires additional files, place them within the appropriate existing framework area instead of inventing a competing architecture.
+
+---
+
+# 2. DEVELOPMENT GATES
+
+Follow this development order:
+
+```text
+G0 PROJECT DEFINITION
+ ↓
+G1 FOUNDATION
+ ↓
+G2 DATABASE
+ ↓
+G3 MARKET DATA
+ ↓
+G4 MULTI-TIMEFRAME
+ ↓
+G5 TECHNICAL ANALYSIS
+ ↓
+G6 PRICE ACTION
+ ↓
+G7 MARKET STRUCTURE
+ ↓
+G8 SMC
+ ↓
+G9 ICT
+ ↓
+G10 VOLUME
+ ↓
+G11 OPTIONS
+ ↓
+G12 MACRO/NEWS
+ ↓
+G13 FEATURE ENGINE
+ ↓
+G14 MARKET REGIME
+ ↓
+G15 STRATEGY ENGINE
+ ↓
+G16 BACKTEST
+ ↓
+G17 WALK-FORWARD
+ ↓
+G18 MONTE CARLO
+ ↓
+G19 AI/ML
+ ↓
+G20 DECISION ENGINE
+ ↓
+G21 RISK ENGINE
+ ↓
+G22 PAPER TRADING
+ ↓
+G23 BROKER
+ ↓
+G24 EXECUTION
+ ↓
+G25 PORTFOLIO
+ ↓
+G26 DASHBOARD
+ ↓
+G27 MONITORING
+ ↓
+G28 SECURITY
+ ↓
+G29 STAGING
+ ↓
+G30 PRODUCTION
+
+```
+
+Never skip a gate merely because later code can be written.
+
+---
+
+# 3. FIRST ACTION IN EVERY NEW SESSION
+
+Before changing anything:
+
+### A. Inspect GitHub
+
+Inspect:
+
+- current branch
+- latest commits
+- repository tree
+- `.ai/CURRENT_STATE.md`
+- `.ai/MASTER_TASKS.md`
+- `.ai/COMPLETED.md`
+- `.ai/PENDING.md`
+- `.ai/BLOCKED.md`
+- `.ai/BUGS.md`
+- `.ai/TECH_DEBT.md`
+- `.ai/DECISIONS.md`
+- `PROJECT_STATUS.md`
+- `VIBE_CODING_MASTER.md`
+- `AGENTS.md`
+- relevant architecture/specification documents
+- relevant existing implementation
+- relevant tests
+
+### B. Check Git history
+
+Determine:
+
+- what was actually implemented
+- what was only documented
+- what was partially implemented
+- what is already tested
+- what is broken
+- what is duplicated
+- what the latest commit accomplished
+
+Never assume a task is complete just because a file exists.
+
+---
+
+# 4. CURRENT STATE IS AUTHORITATIVE
+
+Determine the real project state from the repository.
+
+Use:
+
+```text
+Repository state
++
+Git history
++
+MASTER_TASKS
++
+CURRENT_STATE
++
+PENDING
++
+COMPLETED
++
+Tests
++
+Actual implementation
+
+```
+
+Then select the **highest-priority unfinished task according to the canonical gate order**.
+
+If an existing implementation is incomplete or broken, fix it before starting unrelated work.
+
+---
+
+# 5. IMPLEMENTATION STANDARD
+
+This is NOT a documentation-only project.
+
+Build actual production-grade software.
+
+For every implementation:
+
+1. inspect existing code
+2. identify interfaces
+3. design minimal correct change
+4. implement
+5. add tests
+6. run tests
+7. run lint/type checks where applicable
+8. check security
+9. check data integrity
+10. check no-lookahead behavior where applicable
+11. check regression risk
+12. update documentation
+13. update project state
+14. commit changes
+15. move to the next task
+
+Do not create fake placeholder implementations that pretend to be production-ready.
+
+If something must initially be an interface/adapter/stub, clearly mark it as such and define its acceptance criteria.
+
+---
+
+# 6. TRADING SYSTEM ARCHITECTURE
+
+Maintain this dependency direction:
+
+```text
+MARKET DATA
+     ↓
+DATA VALIDATION
+     ↓
+FEATURE ENGINE
+     ↓
+MARKET REGIME
+     ↓
+STRATEGY ENGINE
+     ↓
+DECISION ENGINE
+     ↓
+RISK ENGINE
+     ↓
+EXECUTION ENGINE
+     ↓
+BROKER
+
+```
+
+Supporting systems:
+
+```text
+AI/ML
+OPTIONS
+MACRO
+NEWS
+SENTIMENT
+VOLUME
+SMC
+ICT
+PORTFOLIO
+JOURNAL
+OBSERVABILITY
+AUDIT
+
+```
+
+Important:
+
+**Strategy does not place orders.**
+
+**AI does not directly place orders.**
+
+**Frontend does not bypass risk.**
+
+**Risk Engine can reject any signal.**
+
+**Execution requires explicit authorization.**
+
+---
+
+# 7. TRADING SAFETY INVARIANTS
+
+Always enforce:
+
+- signal ≠ order
+- strategy ≠ permission
+- AI prediction ≠ guaranteed outcome
+- risk engine remains independent
+- live trading disabled by default
+- no automatic live execution during development
+- no secrets committed
+- no API keys committed
+- no look-ahead bias
+- no future information in historical features
+- timestamps must be explicit
+- data quality must be validated
+- orders must be auditable
+- execution must be reconciled
+- duplicate orders must be prevented
+- stale data must be detected
+- broker failures must be handled
+- kill switch must exist before live execution
+- paper trading must precede live execution
+- backtest profitability alone is never sufficient for production approval
+
+---
+
+# 8. DATA RULES
+
+Use UTC internally unless a domain-specific market-session representation requires otherwise.
+
+Every market-data pipeline should consider:
+
+- event timestamp
+- ingestion timestamp
+- source
+- instrument identity
+- exchange
+- timezone
+- session
+- OHLC validity
+- duplicates
+- missing data
+- gaps
+- corporate actions
+- contract expiry/roll
+- point-in-time correctness
+- feature lookback
+- future-data leakage
+
+Never allow future information into historical analysis.
+
+---
+
+# 9. AI/ML RULES
+
+AI/ML must support the trading system rather than blindly control it.
+
+Possible models include:
+
+- XGBoost
+- LightGBM
+- neural networks
+- ensemble models
+- regime models
+- probability models
+- ranking models
+
+But every model must have:
+
+- dataset definition
+- feature definition
+- train/validation/test separation
+- time-aware validation
+- leakage checks
+- evaluation metrics
+- model version
+- experiment tracking
+- reproducibility
+- inference contract
+- monitoring
+- fallback behavior
+
+Do not claim an accuracy percentage unless it is statistically validated.
+
+---
+
+# 10. BACKTESTING RULES
+
+Backtesting must be realistic.
+
+Include:
+
+- event-driven processing
+- no look-ahead
+- transaction costs
+- brokerage/fees
+- slippage
+- spread assumptions where relevant
+- latency assumptions where relevant
+- position sizing
+- stops
+- targets
+- partial fills where applicable
+- portfolio accounting
+- drawdown
+- expectancy
+- Sharpe/Sortino where appropriate
+- profit factor
+- win rate
+- average win/loss
+- tail losses
+- exposure
+- turnover
+
+Then support:
+
+```text
+Backtest
+→ Walk Forward
+→ Monte Carlo
+→ Robustness
+→ Paper Trading
+→ Controlled Execution
+
+```
+
+---
+
+# 11. MARKET ANALYSIS SCOPE
+
+The platform should eventually support broad technical and quantitative analysis including:
+
+### Technical Analysis
+
+- trend
+- momentum
+- volatility
+- moving averages
+- oscillators
+- bands
+- volume
+- Fibonacci
+
+### Price Action
+
+- candlesticks
+- support/resistance
+- breakout
+- retest
+- gaps
+- trendlines
+
+### Market Structure
+
+- swing highs/lows
+- HH
+- HL
+- LH
+- LL
+- BOS
+- CHOCH
+- MSS
+
+### SMC
+
+- order blocks
+- fair value gaps
+- liquidity
+- equal highs/lows
+- displacement
+- premium/discount
+- mitigation
+
+### ICT
+
+- liquidity
+- FVG
+- displacement
+- OTE
+- sessions
+- dealing ranges
+- PD arrays
+
+### Volume
+
+- volume profile
+- VWAP
+- relative volume
+- order flow
+
+### Options
+
+- option chain
+- OI
+- OI change
+- IV
+- Greeks
+- PCR
+- strike analysis
+- expiry analysis
+- options-derived features
+
+### Context
+
+- macro
+- rates
+- inflation
+- currency
+- economic events
+- global indices
+- commodities
+- FII/DII
+- news
+- sentiment
+- event detection
+
+These components must feed a coherent feature/decision architecture rather than become disconnected indicators.
+
+---
+
+# 12. PRIMARY MARKET
+
+Initial focus:
+
+**NSE / Indian markets**
+
+Design interfaces so that later support can be added for:
+
+- crypto
+- forex
+- US markets
+- other exchanges
+
+Do not hard-code the entire architecture around one broker.
+
+---
+
+# 13. TECHNOLOGY DIRECTION
+
+Preferred stack unless repository evidence or a justified ADR says otherwise:
+
+### Backend
+
+- Python 3.12+
+- FastAPI
+- Pydantic
+- Uvicorn
+
+### Data
+
+- NumPy
+- Pandas
+- Polars
+- PyArrow
+
+### Database
+
+- PostgreSQL
+- TimescaleDB where useful
+- ClickHouse only where scale justifies it
+
+### Cache/Eventing
+
+- Redis
+- Redis Streams initially
+- Kafka only when justified
+
+### ML
+
+- scikit-learn
+- XGBoost
+- LightGBM
+- PyTorch
+- MLflow
+
+### Frontend
+
+- Next.js
+- React
+- TypeScript
+- TradingView Lightweight Charts
+
+### Infrastructure
+
+- Docker
+- Docker Compose
+- GitHub Actions
+- Prometheus
+- Grafana
+
+Do not add unnecessary infrastructure merely for complexity.
+
+---
+
+# 14. VIBE-CODING LOOP
+
+For EVERY task use:
+
+```text
+READ
+ ↓
+INSPECT
+ ↓
+PLAN
+ ↓
+IMPLEMENT
+ ↓
+TEST
+ ↓
+DEBUG
+ ↓
+SECURITY REVIEW
+ ↓
+REGRESSION TEST
+ ↓
+DOCUMENT
+ ↓
+UPDATE STATE
+ ↓
+COMMIT
+ ↓
+NEXT TASK
+
+```
+
+If tests fail:
+
+```text
+FAIL
+ ↓
+DIAGNOSE
+ ↓
+FIX
+ ↓
+RETEST
+
+```
+
+Do not move forward while knowingly leaving a broken core implementation unless the task is explicitly blocked and documented.
+
+---
+
+# 15. TASK MANAGEMENT
+
+Maintain `.ai/MASTER_TASKS.md`.
+
+Each task should have:
+
+- ID
+- gate
+- description
+- status
+- dependencies
+- implementation location
+- tests
+- acceptance criteria
+- notes/blockers
+
+Use statuses such as:
+
+```text
+BACKLOG
+READY
+IN_PROGRESS
+BLOCKED
+DONE
+
+```
+
+When a task is actually complete:
+
+- mark it DONE
+- update COMPLETED.md
+- remove/move it from PENDING.md as appropriate
+- update CURRENT\_STATE.md
+- update PROJECT\_STATUS.md
+- record important decisions in DECISIONS.md
+- record technical debt if introduced
+
+---
+
+# 16. DO NOT DUPLICATE EXISTING WORK
+
+Before creating a new:
+
+- module
+- class
+- API
+- schema
+- strategy
+- feature
+- service
+- database table
+- adapter
+
+search the repository first.
+
+If equivalent functionality already exists:
+
+**extend/refactor it instead of creating a duplicate.**
+
+Preserve useful existing implementation from previous work.
+
+---
+
+# 17. GITHUB WORKFLOW
+
+Work from the actual repository.
+
+Prefer feature branches for substantial changes.
+
+Example:
+
+```text
+framework/bootstrap
+g1/foundation
+g2/database
+g3/market-data
+g4/mtf
+...
+
+```
+
+Use meaningful commits.
+
+Example:
+
+```text
+Implement G1 backend foundation
+Add canonical market data contracts
+Implement multi-timeframe aggregation
+Add deterministic SMC feature engine
+
+```
+
+Do not create meaningless commits.
+
+Do not force-push or destroy existing history unless explicitly required.
+
+---
+
+# 18. WHEN THE SESSION RESUMES
+
+Do NOT simply tell me:
+
+> "We can continue."
+
+Instead immediately determine:
+
+```text
+WHERE WE ARE
+WHAT IS COMPLETE
+WHAT IS PARTIAL
+WHAT IS BROKEN
+WHAT IS NEXT
+
+```
+
+Then execute the next appropriate task.
+
+At the beginning of your response, give me a very short status:
+
+```text
+CURRENT GATE:
+CURRENT TASK:
+REPO STATE:
+NEXT ACTION:
+
+```
+
+Then perform the work.
+
+---
+
+# 19. IF THE USER SAYS "NEXT"
+
+Interpret:
+
+**NEXT = continue autonomous implementation from the current repository state.**
+
+Do not ask:
+
+> "What should I do next?"
+
+Instead:
+
+1. inspect state
+2. identify next task
+3. implement it
+4. test it
+5. update state
+6. commit
+7. report result
+8. identify the next task
+
+---
+
+# 20. IF THE USER SAYS "CONTINUE"
+
+Same rule.
+
+Continue from the repository state.
+
+Do not restart.
+
+---
+
+# 21. IF THE USER SAYS "KEEP GOING"
+
+Continue the development loop.
+
+Do not stop merely because one task is completed.
+
+After completing a task, automatically move to the next task if it is safe and dependencies are satisfied.
+
+---
+
+# 22. PRODUCTION READINESS
+
+Do not call the system:
+
+- production-ready
+- live-trading-ready
+- broker-ready
+- safe for real-money execution
+
+unless the relevant acceptance gates have genuinely passed.
+
+Production requires evidence including:
+
+```text
+Implementation
++
+Tests
++
+Integration
++
+Security
++
+Data validation
++
+No-lookahead validation
++
+Backtest validation
++
+Walk-forward
++
+Monte Carlo
++
+Paper trading
++
+Risk controls
++
+Broker reconciliation
++
+Failure handling
++
+Kill switch
++
+Monitoring
++
+Audit trail
++
+Operational runbook
++
+Release acceptance
+
+```
+
+---
+
+# 23. PERSONAL USE FIRST
+
+The system is initially for my own trading/research use.
+
+Architecture should remain clean enough that it can later become a SaaS product.
+
+Do not prematurely add unnecessary multi-tenant SaaS complexity.
+
+Prioritize:
+
+```text
+Correctness
+Reliability
+Research quality
+Risk control
+Testability
+Maintainability
+Observability
+
+```
+
+over unnecessary UI or infrastructure complexity.
+
+---
+
+# 24. FINAL RESPONSE AFTER EACH DEVELOPMENT STEP
+
+Report:
+
+```text
+✅ COMPLETED
+- ...
+
+🔧 IMPLEMENTED
+- ...
+
+🧪 TESTED
+- ...
+
+📊 CURRENT STATE
+- Gate:
+- Task:
+
+⚠️ BLOCKERS / RISKS
+- ...
+
+➡️ NEXT
+- ...
+
+```
+
+Keep the report concise, but include enough technical detail for me to understand what changed.
+
+---
+
+# 25. MOST IMPORTANT RULE
+
+The repository is the source of truth.
+
+Never assume.
+
+Inspect first.
+
+Do not rebuild completed work.
+
+Do not simplify my framework.
+
+Do not skip gates.
+
+Do not bypass risk.
+
+Do not introduce look-ahead bias.
+
+Do not expose secrets.
+
+Do not claim production readiness without evidence.
+
+When uncertain, inspect the repository and Git history before asking me.
+
+**Now resume the project from the actual current GitHub state and continue with the highest-priority unfinished task.**
