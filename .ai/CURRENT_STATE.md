@@ -3,7 +3,7 @@
 Date: 2026-09-12
 
 ## Repository state
-Execution/broker hardening is complete through the current V1 scope on `main`; G7-001 dashboard implementation is now in progress. Live trading remains disabled.
+Execution/broker hardening is complete through the current V1 scope on `main`; G7-001 dashboard implementation is in progress. Live trading remains disabled.
 
 ## Completed implementation work
 - G0-001 project control files and agent rules.
@@ -39,9 +39,10 @@ Execution/broker hardening is complete through the current V1 scope on `main`; G
 - PostgreSQL migration 0004 and transactional execution-repository validation passed in GitHub Actions.
 - Backend unit/database tests, broker integration harness, and Ruff lint passed in the clean execution validation run.
 - G7-001 initial read-only operator dashboard surface with explicit safety/guardrail state and frontend regression coverage.
+- G7-001 read-only dashboard runtime API: `GET /api/v1/dashboard/state`, frontend consumption through the Next.js API proxy, fail-safe UI fallback, and API safety contract test.
 
 ## In progress
-- G7-001 dashboard: expand from the read-only operator surface into data-backed market/research views without creating an execution bypass.
+- G7-001 dashboard: add data-backed market/research views using existing domain contracts without creating an execution bypass.
 - Upstox sandbox end-to-end acceptance remains pending because no sandbox credential has been supplied; the harness is ready.
 
 ## Pending
@@ -55,7 +56,7 @@ Execution/broker hardening is complete through the current V1 scope on `main`; G
 - Exchange-session-aware daily/weekly aggregation remains a future market-calendar enhancement.
 - Upstox order placement deliberately disables broker auto-slicing in V1 to preserve one internal order identity per broker result.
 - Upstox's order book is current-day only; cross-session historical reconciliation requires separate durable local history and/or provider history endpoints.
-- The dashboard currently uses static operator-state data; backend API wiring is intentionally the next dashboard increment.
+- Dashboard API currently exposes runtime safety state only; market/research data endpoints are the next G7-001 increment.
 
 ## Blocked
 - Upstox sandbox acceptance requires an explicitly supplied sandbox credential; no credential is available to this workflow.
