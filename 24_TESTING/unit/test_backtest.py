@@ -3,6 +3,7 @@ from decimal import Decimal
 
 import pytest
 
+from app.backtest.costs import CostModel
 from app.backtest.engine import BacktestConfig, BacktestEngine, Signal
 from app.market_data.contracts import HistoricalBar
 
@@ -48,6 +49,27 @@ def test_fee_and_slippage_reduce_profit() -> None:
     result = engine.run(bars, signal_fn)
     assert len(result.trades) == 1
     assert result.trades[0].net_pnl < result.trades[0].gross_pnl
+
+
+def test_cost_model_is_the_single_backtest_pricing_source() -> None:
+    config = BacktestConfig(
+        fee_bps=Decimal("10"), slippage_bps=Decimal("10"), spread_bps=Decimal("20")
+    )
+    engine = BacktestEngine(config)
+    assert engine.cost_model == CostModel(
+        fee_bps=Decimal("10"), slippage_bps=Decimal("10"), spread_bps=Decimal("20")
+    )
+    bars = [bar(0, 100, 100), bar(1, 110, 110), bar(2, 120, 120)]
+    result = engine.run(
+        bars,
+        lambda history, current: (
+            Signal(event_time=current.event_time, side="LONG", quantity=Decimal("1"))
+            if current is bars[0]
+            else None
+        ),
+    )
+    assert result.fills[0].price == Decimal("110.22")
+    assert result.fills[0].fee == Decimal("0.11022")
 
 
 def test_future_signal_is_rejected() -> None:
