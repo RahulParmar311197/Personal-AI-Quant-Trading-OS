@@ -3,7 +3,7 @@
 Date: 2026-09-12
 
 ## Repository state
-Execution/broker hardening is progressing on `main` with live trading still disabled.
+Execution/broker hardening is complete through the current V1 scope on `main`; G7-001 dashboard implementation is now in progress. Live trading remains disabled.
 
 ## Completed implementation work
 - G0-001 project control files and agent rules.
@@ -31,22 +31,23 @@ Execution/broker hardening is progressing on `main` with live trading still disa
 - Execution hardening V1: normalized order lifecycle state machine, durable SQL execution-order schema/migration, idempotency contract, fail-closed order/position reconciliation service and orchestration.
 - Upstox reconciliation discovery: adapter implements current-day order-book listing through `/v2/order/retrieve-all`, enabling broker-only order discovery rather than only targeted local-order lookups.
 - Execution reservation hardening: duplicate inserts are isolated with a SQLAlchemy SAVEPOINT so an idempotency race does not roll back the caller's outer transaction.
+- G6-004-H1 durable local position projection, fail-closed reconciliation state handling and execution exception-path handling, including explicit `CREATED -> UNKNOWN` for ambiguous broker submission.
+- G6-004-H2 transactional execution repository validation against PostgreSQL.
 - G6-004-H3 reconciliation runner/snapshot cadence contract and tests.
-- Database model import-cycle regression fix and explicit regression test.
 - G6-004-H4 sandbox acceptance harness: opt-in integration test, environment-only credentials, sandbox lifecycle documentation and CI skip-by-default integration stage.
 - G6-004-H5 durable execution audit events and fill persistence, normalized broker-fill discovery, durable broker-order resolution, idempotent fill ingestion, lifecycle advancement and replay/conflict tests.
 - PostgreSQL migration 0004 and transactional execution-repository validation passed in GitHub Actions.
 - Backend unit/database tests, broker integration harness, and Ruff lint passed in the clean execution validation run.
+- G7-001 initial read-only operator dashboard surface with explicit safety/guardrail state and frontend regression coverage.
 
 ## In progress
-- Latest decision test correction committed; GitHub Actions must validate the corrected high-volatility opt-in assertion.
+- G7-001 dashboard: expand from the read-only operator surface into data-backed market/research views without creating an execution bypass.
 - Upstox sandbox end-to-end acceptance remains pending because no sandbox credential has been supplied; the harness is ready.
-- G6-004-H1 remaining hardening: durable local position/reconciliation state and execution exception-path handling has been implemented; final task-state normalization remains.
 
 ## Pending
-- G6-004-H4 Upstox sandbox acceptance.
-- Remaining execution hardening review and durable position reconciliation scalability hardening.
-- G7 dashboard, observability/audit trail, production acceptance and controlled rollout.
+- G7-002 observability and audit trail UI/telemetry integration.
+- G7-003 production acceptance and controlled rollout.
+- Further execution projection scalability hardening as future work if runtime volume requires it.
 
 ## Known technical debt / follow-up
 - Backtest cost-model integration is complete for the V1 fee/slippage/spread model; richer market-impact, queue and intrabar models remain future work.
@@ -54,6 +55,7 @@ Execution/broker hardening is progressing on `main` with live trading still disa
 - Exchange-session-aware daily/weekly aggregation remains a future market-calendar enhancement.
 - Upstox order placement deliberately disables broker auto-slicing in V1 to preserve one internal order identity per broker result.
 - Upstox's order book is current-day only; cross-session historical reconciliation requires separate durable local history and/or provider history endpoints.
+- The dashboard currently uses static operator-state data; backend API wiring is intentionally the next dashboard increment.
 
 ## Blocked
 - Upstox sandbox acceptance requires an explicitly supplied sandbox credential; no credential is available to this workflow.
