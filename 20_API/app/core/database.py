@@ -32,3 +32,8 @@ def get_db() -> Generator[Session, None, None]:
         yield db
     finally:
         db.close()
+
+
+# Import models after Base is declared so Alembic can discover their metadata.
+# Kept at module bottom to avoid circular imports during model declaration.
+from app.models import Bar, Instrument  # noqa: E402,F401
