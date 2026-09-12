@@ -10,8 +10,8 @@
 | G1-003 | P0 | Create database migration foundation | IN_PROGRESS |
 | G1-004 | P1 | Add Docker development environment | IN_PROGRESS |
 | G2-001 | P0 | Define market-data canonical schema and executable persistence mapping | IN_PROGRESS |
-| G2-002 | P0 | Implement historical data ingestion contract | BACKLOG |
-| G2-003 | P1 | Implement live data adapter interface | BACKLOG |
+| G2-002 | P0 | Implement historical data ingestion contract | IN_PROGRESS |
+| G2-003 | P1 | Implement live data adapter interface | IN_PROGRESS |
 | G3-001 | P0 | Implement multi-timeframe aggregation | BACKLOG |
 | G3-002 | P0 | Implement technical feature engine | BACKLOG |
 | G3-003 | P0 | Implement market-structure engine | BACKLOG |
