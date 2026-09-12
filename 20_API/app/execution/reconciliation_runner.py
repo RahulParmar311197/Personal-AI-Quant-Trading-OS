@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
-from app.brokers.contracts import BrokerAdapter, BrokerOrderResult
+from app.brokers.contracts import BrokerAdapter, BrokerOrderResult, BrokerPosition
 from app.execution.reconciliation import (
     LocalOrderSnapshot,
     ReconciliationFinding,
@@ -27,7 +27,7 @@ class ReconciliationRun:
 
 
 class ReconciliationRunner:
-    """Fetch broker state and compare it with durable local state.
+    """Fetch broker order/position state and compare it with durable local state.
 
     The runner is strictly read-only. A mismatch never triggers an order,
     retry, cancellation, or broker mutation. Operators must resolve
@@ -44,7 +44,11 @@ class ReconciliationRunner:
         self.broker = broker
         self.service = service or ReconciliationService()
 
-    def run(self) -> ReconciliationRun:
+    def run(
+        self,
+        *,
+        local_positions: tuple[BrokerPosition, ...] = (),
+    ) -> ReconciliationRun:
         started = datetime.now(timezone.utc)
         if not self.broker.healthcheck():
             report = ReconciliationReport(
@@ -72,13 +76,29 @@ class ReconciliationRunner:
             if row.broker_order_id
         )
 
-        if self.broker.capabilities.list_orders:
-            broker_orders = self.broker.list_orders()
-        else:
-            broker_orders = tuple(
-                self.broker.get_order(item.broker_order_id) for item in local_orders
+        try:
+            if self.broker.capabilities.list_orders:
+                broker_orders = self.broker.list_orders()
+            else:
+                broker_orders = tuple(
+                    self.broker.get_order(item.broker_order_id) for item in local_orders
+                )
+            broker_positions = self.broker.get_positions()
+        except Exception as exc:
+            report = ReconciliationReport(
+                (
+                    ReconciliationFinding(
+                        "BROKER_UNAVAILABLE",
+                        "broker-snapshot",
+                        f"broker snapshot failed: {type(exc).__name__}",
+                    ),
+                )
             )
+            completed = datetime.now(timezone.utc)
+            return ReconciliationRun(started, completed, report)
 
-        report = self.service.reconcile_orders(local_orders, broker_orders)
+        order_report = self.service.reconcile_orders(local_orders, broker_orders)
+        position_report = self.service.reconcile_positions(local_positions, broker_positions)
+        report = ReconciliationReport(order_report.findings + position_report.findings)
         completed = datetime.now(timezone.utc)
         return ReconciliationRun(started, completed, report)
