@@ -1,0 +1,26 @@
+Your system should never look at only one timeframe.
+
+For example:
+
+1D    → Macro trend
+4H    → Structure
+1H    → Direction
+15M   → Setup
+5M    → Entry
+1M    → Execution
+
+The exact mapping should be configurable by strategy.
+
+The system could produce:
+
+NIFTY
+
+1D  → Bullish
+4H  → Bullish
+1H  → Bullish
+15M → Pullback
+5M  → Liquidity sweep
+1M  → Bullish displacement
+
+Result:
+LONG setup
