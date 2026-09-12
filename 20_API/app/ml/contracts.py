@@ -1,7 +1,7 @@
 """Provider-neutral ML contracts with explicit point-in-time boundaries."""
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
 from decimal import Decimal
 from types import MappingProxyType
 from typing import Mapping
