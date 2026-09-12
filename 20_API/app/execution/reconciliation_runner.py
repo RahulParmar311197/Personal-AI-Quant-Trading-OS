@@ -39,7 +39,7 @@ class ReconciliationRunner:
         self.broker = broker
         self.service = service or ReconciliationService()
 
-    def run(self) -> ReconciliationRun:
+    def run(self, *, local_positions=None) -> ReconciliationRun:
         """Reconcile broker orders and positions against durable local state."""
         started = datetime.now(timezone.utc)
         if not self.broker.healthcheck():
@@ -55,19 +55,36 @@ class ReconciliationRunner:
             completed = datetime.now(timezone.utc)
             return ReconciliationRun(started, completed, report)
 
-        local_orders = tuple(
-            LocalOrderSnapshot(
-                client_order_id=row.client_order_id,
-                broker_order_id=row.broker_order_id or "",
-                status=row.status,
-                quantity=row.requested_quantity,
-                filled_quantity=row.filled_quantity,
-                instrument_id=row.instrument_id,
+        try:
+            local_orders = tuple(
+                LocalOrderSnapshot(
+                    client_order_id=row.client_order_id,
+                    broker_order_id=row.broker_order_id or "",
+                    status=row.status,
+                    quantity=row.requested_quantity,
+                    filled_quantity=row.filled_quantity,
+                    instrument_id=row.instrument_id,
+                )
+                for row in self.repository.find_active()
+                if row.broker_order_id
             )
-            for row in self.repository.find_active()
-            if row.broker_order_id
-        )
-        local_positions = self.repository.project_positions()
+            positions = (
+                tuple(local_positions)
+                if local_positions is not None
+                else tuple(self.repository.project_positions())
+            )
+        except Exception as exc:
+            report = ReconciliationReport(
+                (
+                    ReconciliationFinding(
+                        "LOCAL_STATE_UNAVAILABLE",
+                        "local-snapshot",
+                        f"local reconciliation state failed: {type(exc).__name__}",
+                    ),
+                )
+            )
+            completed = datetime.now(timezone.utc)
+            return ReconciliationRun(started, completed, report)
 
         try:
             if self.broker.capabilities.list_orders:
@@ -91,7 +108,7 @@ class ReconciliationRunner:
             return ReconciliationRun(started, completed, report)
 
         order_report = self.service.reconcile_orders(local_orders, broker_orders)
-        position_report = self.service.reconcile_positions(local_positions, broker_positions)
+        position_report = self.service.reconcile_positions(positions, broker_positions)
         report = ReconciliationReport(order_report.findings + position_report.findings)
         completed = datetime.now(timezone.utc)
         return ReconciliationRun(started, completed, report)
