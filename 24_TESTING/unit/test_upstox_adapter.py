@@ -14,6 +14,14 @@ def fake_transport(method, url, headers, body, timeout):
         return 200, {"status": "success", "data": {"order_id": "UP-1"}}
     if method == "GET" and "/v2/order/details?" in url:
         return 200, {"status": "success", "data": {"order_id": "UP-1", "tag": "client-1", "status": "complete", "filled_quantity": 1, "average_price": 100}}
+    if method == "GET" and url.endswith("/v2/order/retrieve-all"):
+        return 200, {
+            "status": "success",
+            "data": [
+                {"order_id": "UP-1", "tag": "client-1", "status": "complete", "filled_quantity": 1, "average_price": 100},
+                {"order_id": "UP-2", "tag": "foreign-order", "status": "open", "filled_quantity": 0, "average_price": 0},
+            ],
+        }
     if method == "GET" and url.endswith("/v2/user/profile"):
         return 200, {"status": "success", "data": {"user_id": "U1"}}
     if method == "GET" and url.endswith("/v2/user/get-funds-and-margin"):
@@ -42,6 +50,16 @@ def test_upstox_order_and_cancel_mapping() -> None:
     assert result.filled_quantity == Decimal("1")
     cancelled = adapter.cancel_order("UP-1")
     assert cancelled.status == "CANCELLED"
+
+
+def test_upstox_order_book_enables_full_discovery() -> None:
+    adapter = UpstoxAdapter(UpstoxConfig("sandbox-token"), fake_transport)
+    orders = adapter.list_orders()
+    assert adapter.capabilities.list_orders is True
+    assert [order.broker_order_id for order in orders] == ["UP-1", "UP-2"]
+    assert orders[0].client_order_id == "client-1"
+    assert orders[0].status == "FILLED"
+    assert orders[1].status == "OPEN"
 
 
 def test_upstox_account_and_positions() -> None:
