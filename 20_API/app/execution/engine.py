@@ -65,7 +65,26 @@ class ExecutionEngine:
             "CANCELLED": "CANCELLED",
             "REJECTED": "REJECTED",
         }
-        return mapping[result.status]
+        return mapping.get(result.status, "UNKNOWN")
+
+    def _mark_unknown(self, client_order_id: str, message: str) -> None:
+        """Best-effort durable transition; never hide the original ambiguity."""
+        if self.repository is None:
+            return
+        try:
+            self.repository.transition(
+                client_order_id,
+                OrderLifecycleEvent(
+                    client_order_id=client_order_id,
+                    status="UNKNOWN",
+                    event_time=datetime.now(timezone.utc),
+                    message=message,
+                ),
+            )
+        except Exception:
+            # A persistence failure cannot make an ambiguous broker outcome safe.
+            # Reconciliation must remain the source of truth for recovery.
+            return
 
     def execute(
         self,
@@ -82,27 +101,34 @@ class ExecutionEngine:
             return ExecutionResult(False, None, "requested quantity exceeds risk authorization")
         if not self.live_enabled:
             return ExecutionResult(False, None, "live execution is disabled")
-        if not self.broker.healthcheck():
+        try:
+            healthy = self.broker.healthcheck()
+        except Exception:
+            healthy = False
+        if not healthy:
             return ExecutionResult(False, None, "broker healthcheck failed")
 
         if self.repository is not None:
-            existing = self.repository.get(intent.client_order_id)
-            if existing is not None:
-                if existing.status in ("UNKNOWN", "SUBMITTED", "ACKNOWLEDGED", "PARTIALLY_FILLED"):
-                    return ExecutionResult(False, None, "existing durable order requires reconciliation")
-                return ExecutionResult(False, None, "duplicate client order id")
-            self.repository.reserve(
-                key=DurableOrderKey(
-                    client_order_id=intent.client_order_id,
-                    strategy_id=intent.strategy_id,
-                    signal_event_time=intent.event_time,
-                ),
-                instrument_id=intent.instrument_id,
-                side=intent.side,
-                order_type=order_type,
-                quantity=quantity,
-                created_at=intent.event_time,
-            )
+            try:
+                existing = self.repository.get(intent.client_order_id)
+                if existing is not None:
+                    if existing.status in ("UNKNOWN", "SUBMITTED", "ACKNOWLEDGED", "PARTIALLY_FILLED"):
+                        return ExecutionResult(False, None, "existing durable order requires reconciliation")
+                    return ExecutionResult(False, None, "duplicate client order id")
+                self.repository.reserve(
+                    key=DurableOrderKey(
+                        client_order_id=intent.client_order_id,
+                        strategy_id=intent.strategy_id,
+                        signal_event_time=intent.event_time,
+                    ),
+                    instrument_id=intent.instrument_id,
+                    side=intent.side,
+                    order_type=order_type,
+                    quantity=quantity,
+                    created_at=intent.event_time,
+                )
+            except Exception:
+                return ExecutionResult(False, None, "durable order reservation failed")
         elif intent.client_order_id in self._submitted_client_ids:
             return ExecutionResult(False, None, "duplicate client order id")
 
@@ -120,29 +146,30 @@ class ExecutionEngine:
         try:
             result = self.broker.place_order(request)
         except Exception as exc:
-            if self.repository is not None:
-                self.repository.transition(
-                    intent.client_order_id,
-                    OrderLifecycleEvent(
-                        client_order_id=intent.client_order_id,
-                        status="UNKNOWN",
-                        event_time=datetime.now(timezone.utc),
-                        message=f"ambiguous broker response: {type(exc).__name__}",
-                    ),
-                )
+            self._mark_unknown(
+                intent.client_order_id,
+                f"ambiguous broker response: {type(exc).__name__}",
+            )
             return ExecutionResult(False, None, "ambiguous broker response; reconciliation required")
 
         self._submitted_client_ids.add(intent.client_order_id)
         if self.repository is not None:
-            self.repository.transition(
-                intent.client_order_id,
-                OrderLifecycleEvent(
-                    client_order_id=intent.client_order_id,
-                    status=self._lifecycle_status(result),
-                    event_time=datetime.now(timezone.utc),
-                    broker_order_id=result.broker_order_id,
-                    message=result.message,
-                ),
-                filled_quantity=result.filled_quantity,
-            )
+            try:
+                self.repository.transition(
+                    intent.client_order_id,
+                    OrderLifecycleEvent(
+                        client_order_id=intent.client_order_id,
+                        status=self._lifecycle_status(result),
+                        event_time=datetime.now(timezone.utc),
+                        broker_order_id=result.broker_order_id,
+                        message=result.message,
+                    ),
+                    filled_quantity=result.filled_quantity,
+                )
+            except Exception:
+                self._mark_unknown(
+                    intent.client_order_id,
+                    "broker accepted order but durable acknowledgement failed",
+                )
+                return ExecutionResult(False, result, "broker order accepted; reconciliation required")
         return ExecutionResult(True, result, "broker order submitted")
