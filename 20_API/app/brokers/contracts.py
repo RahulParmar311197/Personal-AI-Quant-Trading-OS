@@ -1,12 +1,8 @@
-"""Provider-neutral broker interface and normalized trading contracts.
-
-Concrete adapters are intentionally absent from G6-003. This boundary keeps
-broker-specific APIs out of strategy, decision, risk, and portfolio layers.
-"""
+"""Provider-neutral broker interface and normalized trading contracts."""
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
 from decimal import Decimal
 from typing import Literal
 
@@ -22,6 +18,7 @@ class BrokerCapabilities:
     stop_orders: bool = False
     fractional_quantity: bool = False
     streaming: bool = False
+    list_orders: bool = False
 
 
 @dataclass(frozen=True)
@@ -109,7 +106,7 @@ class BrokerAccount:
 
 
 class BrokerAdapter(ABC):
-    """Minimal capability boundary for future broker implementations."""
+    """Provider-neutral broker boundary."""
 
     @property
     @abstractmethod
@@ -127,6 +124,10 @@ class BrokerAdapter(ABC):
     @abstractmethod
     def get_order(self, broker_order_id: str) -> BrokerOrderResult:
         raise NotImplementedError
+
+    def list_orders(self) -> tuple[BrokerOrderResult, ...]:
+        """Return normalized broker orders when the provider supports it."""
+        raise NotImplementedError("broker does not support order listing")
 
     @abstractmethod
     def get_account(self) -> BrokerAccount:
