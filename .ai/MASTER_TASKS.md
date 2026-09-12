@@ -13,7 +13,7 @@
 | G2-002 | P0 | Implement historical data ingestion contract | IN_PROGRESS |
 | G2-003 | P1 | Implement live data adapter interface | IN_PROGRESS |
 | G3-001 | P0 | Implement multi-timeframe aggregation | IN_PROGRESS |
-| G3-002 | P0 | Implement technical feature engine | BACKLOG |
+| G3-002 | P0 | Implement technical feature engine | IN_PROGRESS |
 | G3-003 | P0 | Implement market-structure engine | BACKLOG |
 | G3-004 | P0 | Implement deterministic SMC/ICT feature contracts | BACKLOG |
 | G4-001 | P0 | Build backtest engine with no-look-ahead controls | BACKLOG |
