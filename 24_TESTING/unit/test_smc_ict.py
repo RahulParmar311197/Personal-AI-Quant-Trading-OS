@@ -39,14 +39,21 @@ def test_equal_highs_create_buy_side_liquidity_pool() -> None:
     ]
     pools = detect_equal_liquidity(bars, tolerance=Decimal("0.001"))
     assert any(pool.side == "BUY_SIDE" for pool in pools)
+    assert any(pool.price == Decimal("110.01") for pool in pools)
 
 
 def test_premium_discount_uses_trailing_range() -> None:
-    bars = [bar(i, "100", str(100 + i), str(99 + i), str(100 + i)) for i in range(5)]
+    bars = [
+        bar(0, "100", "100", "99", "100"),
+        bar(1, "100", "101", "99", "101"),
+        bar(2, "101", "102", "100", "102"),
+        bar(3, "102", "103", "101", "103"),
+        bar(4, "103", "104", "102", "104"),
+    ]
     result = premium_discount(bars, lookback=5)
     assert result is not None
     assert result.zone == "PREMIUM"
-    assert result.equilibrium == Decimal("101")
+    assert result.equilibrium == Decimal("101.5")
 
 
 def test_displacement_order_block_is_deterministic() -> None:
