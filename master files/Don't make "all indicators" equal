@@ -1,0 +1,107 @@
+This is one of the most important design decisions.
+Don't create:
+RSI = BUY
+MACD = BUY
+EMA = BUY
+Supertrend = BUY
+SMC = BUY
+ICT = BUY
+AI = BUY
+
+Therefore BUY
+That creates correlated signals and can give you false confidence.
+Instead create independent analytical layers.
+
+Layer A — Price
+OHLC
+Candlestick structure
+Support/resistance
+Trendlines
+Breakouts
+Retests
+Gaps
+Volatility
+
+Layer B — Market Structure
+HH/HL
+LH/LL
+BOS
+CHOCH/MSS
+Swing structure
+Trend state
+
+Layer C — SMC
+Order blocks
+Fair value gaps
+Liquidity pools
+Equal highs/lows
+Liquidity sweeps
+Displacement
+Premium/discount
+Mitigation
+
+Layer D — ICT-style concepts
+Liquidity
+Market structure shifts
+FVG
+OTE
+Kill zones/session concepts
+Dealing ranges
+PD arrays
+
+These need precise deterministic definitions, not vague chart interpretations
+
+Layer E — Classical TA
+EMA/SMA
+RSI
+MACD
+ADX
+ATR
+Bollinger Bands
+Stochastic
+VWAP
+Ichimoku
+Fibonacci
+
+Layer F — Volume
+Volume profile
+VWAP
+Relative volume
+OBV
+Volume delta where available
+Cumulative volume measures
+
+Layer G — Options
+Option chain
+OI
+OI change
+IV
+IV rank
+Put/call ratios
+Bid/ask
+Volume
+Greeks
+Max pain as a contextual feature, not a standalone signal
+Expiry structure
+Strike-wise positioning
+
+Layer H — Macro
+Interest rates
+Inflation
+Currency
+Crude
+Gold
+Global indices
+Economic calendar
+Central-bank events
+
+Layer I — News/Sentiment
+News classification
+Event detection
+Sentiment
+Entity impact
+Surprise detection
+
+
+
+
