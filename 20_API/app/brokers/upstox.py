@@ -1,9 +1,10 @@
 """Upstox sandbox adapter.
 
-The adapter targets Upstox's current order V3 endpoints and defaults to the
-sandbox environment. No credentials are stored in source control. Live use
-requires an explicit non-sandbox base URL and is still blocked by the
-execution engine unless live execution is explicitly enabled.
+The adapter targets Upstox order V3 for order submission/cancellation and the
+current V2 order-book/details/account endpoints for reconciliation reads.
+No credentials are stored in source control. Live use requires an explicit
+non-sandbox base URL and remains blocked by the execution engine unless live
+execution is explicitly enabled.
 """
 
 import json
@@ -56,6 +57,7 @@ class UpstoxAdapter(BrokerAdapter):
             stop_orders=True,
             fractional_quantity=False,
             streaming=False,
+            list_orders=True,
         )
 
     def place_order(self, request: BrokerOrderRequest) -> BrokerOrderResult:
@@ -72,8 +74,6 @@ class UpstoxAdapter(BrokerAdapter):
             "validity": "DAY",
             "price": float(request.limit_price or 0),
             "tag": request.client_order_id,
-            # The adapter contract deliberately expects the provider instrument
-            # token here. Internal instrument mapping belongs upstream.
             "instrument_token": request.instrument_id,
             "order_type": order_type,
             "transaction_type": request.side,
@@ -122,6 +122,20 @@ class UpstoxAdapter(BrokerAdapter):
             raise RuntimeError(self._error_message(body, status_code))
         data = body.get("data") or {}
         return self._map_order(data, broker_order_id)
+
+    def list_orders(self) -> tuple[BrokerOrderResult, ...]:
+        """Return the current-day Upstox order book for full reconciliation discovery."""
+        status_code, body = self._request("GET", "/v2/order/retrieve-all", None)
+        if status_code >= 400:
+            raise RuntimeError(self._error_message(body, status_code))
+        data = body.get("data") or []
+        if not isinstance(data, list):
+            raise RuntimeError("Upstox order book response has invalid data shape")
+        return tuple(
+            self._map_order(item, str(item.get("order_id", "")))
+            for item in data
+            if isinstance(item, dict) and str(item.get("order_id", "")).strip()
+        )
 
     def get_account(self) -> BrokerAccount:
         profile_status, profile = self._request("GET", "/v2/user/profile", None)
@@ -184,9 +198,10 @@ class UpstoxAdapter(BrokerAdapter):
             "partially filled": "PARTIALLY_FILLED",
         }
         status = mapping.get(raw_status, "PENDING")
+        client_order_id = str(data.get("tag") or data.get("order_ref_id") or broker_order_id)
         return BrokerOrderResult(
             broker_order_id=str(data.get("order_id", broker_order_id)),
-            client_order_id=str(data.get("tag") or data.get("order_ref_id") or broker_order_id),
+            client_order_id=client_order_id,
             status=status,
             filled_quantity=Decimal(str(data.get("filled_quantity", 0))),
             average_fill_price=(
