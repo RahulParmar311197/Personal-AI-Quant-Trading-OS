@@ -2,10 +2,10 @@
 
 | ID | Priority | Task | Status |
 |---|---|---|---|
-| G0-001 | P0 | Establish project control files and agent rules | IN_PROGRESS |
-| G0-002 | P0 | Freeze V1 requirements and acceptance criteria | READY |
-| G0-003 | P0 | Define target architecture and boundaries | READY |
-| G1-001 | P0 | Create Python backend foundation | BACKLOG |
+| G0-001 | P0 | Establish project control files and agent rules | DONE |
+| G0-002 | P0 | Freeze V1 requirements and acceptance criteria | DONE |
+| G0-003 | P0 | Define target architecture and boundaries | DONE |
+| G1-001 | P0 | Create Python backend foundation | READY |
 | G1-002 | P0 | Create frontend foundation | BACKLOG |
 | G1-003 | P0 | Create database migration foundation | BACKLOG |
 | G1-004 | P1 | Add Docker development environment | BACKLOG |
