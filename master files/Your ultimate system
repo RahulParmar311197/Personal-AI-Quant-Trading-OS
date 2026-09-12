@@ -1,0 +1,39 @@
+I'd call the architecture:
+
+Market Intelligence → Strategy → Decision → Risk → Execution → Learning
+                   MARKET DATA
+                       ↓
+                DATA ENGINEERING
+                       ↓
+              FEATURE ENGINEERING
+                       ↓
+            ┌──────────┴──────────┐
+            ↓                     ↓
+     MARKET THEORY          AI / MACHINE
+       ENGINES               LEARNING
+            │                     │
+            └──────────┬──────────┘
+                       ↓
+                REGIME ENGINE
+                       ↓
+                STRATEGY ENGINE
+                       ↓
+               OPPORTUNITY RANKER
+                       ↓
+                DECISION ENGINE
+                       ↓
+                  RISK GATE
+                       ↓
+              EXECUTION ENGINE
+                       ↓
+                    BROKER
+                       ↓
+                TRADE JOURNAL
+                       ↓
+               PERFORMANCE ENGINE
+                       ↓
+               RESEARCH / LEARNING
+                       │
+                       └──────────────►
+
+That is the system I would build.
