@@ -1,0 +1,58 @@
+For your project, I'd use something close to:
+
+Backend
+Python
+FastAPI
+Pydantic
+
+Data
+Polars
+Pandas
+NumPy
+PyArrow
+
+Database
+PostgreSQL
+TimescaleDB
+ClickHouse
+
+Cache
+Redis
+
+Streaming
+Redis Streams initially
+Kafka later if required
+
+ML
+scikit-learn
+XGBoost
+LightGBM
+PyTorch
+
+Experiment tracking
+MLflow
+
+Frontend
+Next.js
+React
+TypeScript
+
+Charts
+TradingView Lightweight Charts
+
+Realtime
+WebSocket
+
+Infrastructure
+Docker
+Docker Compose
+
+Production
+Kubernetes when justified
+
+Monitoring
+Prometheus
+Grafana
+
+CI/CD
+GitHub Actions
