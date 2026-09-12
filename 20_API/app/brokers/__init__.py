@@ -1,4 +1,4 @@
-"""Provider-neutral broker contracts. No concrete broker is enabled here."""
+"""Broker contracts and sandbox adapters."""
 
 from app.brokers.contracts import (
     BrokerAccount,
@@ -9,6 +9,7 @@ from app.brokers.contracts import (
     BrokerOrderResult,
     BrokerPosition,
 )
+from app.brokers.upstox import UpstoxAdapter, UpstoxConfig
 
 __all__ = [
     "BrokerAccount",
@@ -18,4 +19,6 @@ __all__ = [
     "BrokerOrderRequest",
     "BrokerOrderResult",
     "BrokerPosition",
+    "UpstoxAdapter",
+    "UpstoxConfig",
 ]
