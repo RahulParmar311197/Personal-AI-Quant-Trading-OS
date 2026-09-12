@@ -14,7 +14,6 @@ from sqlalchemy.orm import Session
 
 from app.execution.lifecycle import (
     DurableOrderKey,
-    ExecutionOrderStatus,
     IdempotencyConflict,
     OrderLifecycleEvent,
     OrderLifecycleState,
@@ -85,18 +84,26 @@ class ExecutionOrderRepository:
         try:
             self.session.flush()
         except IntegrityError as exc:
-            self.session.rollback()
-            winner = self.get(key.client_order_id)
-            if winner is not None:
-                if (
-                    winner.strategy_id == key.strategy_id
-                    and winner.signal_event_time == key.signal_event_time
-                    and winner.instrument_id == instrument_id
-                    and winner.side == side
-                    and winner.order_type == order_type
-                    and winner.requested_quantity == quantity
-                ):
-                    return winner
+            # A duplicate reservation is isolated to a SAVEPOINT. Rolling back
+            # the caller's whole transaction here could discard unrelated risk
+            # or audit writes that are meant to commit atomically with execution.
+            nested = self.session.begin_nested()
+            try:
+                winner = self.get(key.client_order_id)
+                if winner is not None:
+                    if (
+                        winner.strategy_id == key.strategy_id
+                        and winner.signal_event_time == key.signal_event_time
+                        and winner.instrument_id == instrument_id
+                        and winner.side == side
+                        and winner.order_type == order_type
+                        and winner.requested_quantity == quantity
+                    ):
+                        nested.commit()
+                        return winner
+            finally:
+                if nested.is_active:
+                    nested.rollback()
             raise OrderAlreadyExists("concurrent order identity reservation conflict") from exc
         return row
 
