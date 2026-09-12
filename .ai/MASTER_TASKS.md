@@ -20,7 +20,7 @@
 | G4-002 | P0 | Add realistic execution/cost model | IN_PROGRESS |
 | G4-003 | P1 | Add walk-forward validation | IN_PROGRESS |
 | G4-004 | P1 | Add Monte Carlo analysis | IN_PROGRESS |
-| G5-001 | P0 | Create strategy registry and base interface | BACKLOG |
+| G5-001 | P0 | Create strategy registry and base interface | IN_PROGRESS |
 | G5-002 | P0 | Create regime engine | BACKLOG |
 | G5-003 | P0 | Create decision engine | BACKLOG |
 | G5-004 | P0 | Create independent risk engine | BACKLOG |
