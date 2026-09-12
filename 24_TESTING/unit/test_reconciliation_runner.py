@@ -16,11 +16,15 @@ class FakeRow:
 
 
 class FakeRepository:
-    def __init__(self, rows):
+    def __init__(self, rows, positions=()):
         self.rows = tuple(rows)
+        self.positions = tuple(positions)
 
     def find_active(self):
         return self.rows
+
+    def project_positions(self):
+        return self.positions
 
 
 class FakeBroker:
@@ -56,7 +60,7 @@ def position(instrument_id="NSE_EQ|ABC", quantity=Decimal("1"), price=Decimal("1
 def test_runner_uses_full_broker_order_snapshot():
     row = FakeRow("client-1", "UP-1", "FILLED", Decimal("1"), Decimal("1"), "NSE_EQ|ABC")
     broker = FakeBroker([order("client-1", "UP-1")], [position()])
-    result = ReconciliationRunner(FakeRepository([row]), broker).run(local_positions=(position(),))
+    result = ReconciliationRunner(FakeRepository([row], [position()]), broker).run()
     assert result.healthy
     assert broker.list_calls == 1
 
@@ -72,7 +76,7 @@ def test_runner_detects_broker_only_order():
 def test_runner_detects_position_mismatch():
     row = FakeRow("client-1", "UP-1", "FILLED", Decimal("1"), Decimal("1"), "NSE_EQ|ABC")
     broker = FakeBroker([order("client-1", "UP-1")], [position(quantity=Decimal("2"))])
-    result = ReconciliationRunner(FakeRepository([row]), broker).run(local_positions=(position(),))
+    result = ReconciliationRunner(FakeRepository([row], [position()]), broker).run()
     assert not result.healthy
     assert any(f.kind == "POSITION_MISMATCH" for f in result.report.findings)
 
@@ -93,3 +97,14 @@ def test_runner_fails_closed_when_snapshot_read_fails():
     result = ReconciliationRunner(FakeRepository([]), broker).run()
     assert not result.healthy
     assert result.report.findings[0].kind == "BROKER_UNAVAILABLE"
+
+
+def test_runner_fails_closed_when_local_position_projection_fails():
+    class BrokenRepository(FakeRepository):
+        def project_positions(self):
+            raise RuntimeError("database unavailable")
+
+    broker = FakeBroker([])
+    result = ReconciliationRunner(BrokenRepository([]), broker).run()
+    assert not result.healthy
+    assert result.report.findings[0].kind == "LOCAL_STATE_UNAVAILABLE"
