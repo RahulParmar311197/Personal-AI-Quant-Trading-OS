@@ -2,6 +2,7 @@
 
 from app.market_data.contracts import HistoricalBarRequest, HistoricalBarResult
 from app.market_data.ingestion import HistoricalIngestionService
+from app.market_data.live import LiveDataProvider, LiveEventGuard, LiveMarketDataEvent
 from app.market_data.ports import HistoricalDataProvider
 
 __all__ = [
@@ -9,4 +10,7 @@ __all__ = [
     "HistoricalBarResult",
     "HistoricalDataProvider",
     "HistoricalIngestionService",
+    "LiveDataProvider",
+    "LiveEventGuard",
+    "LiveMarketDataEvent",
 ]
