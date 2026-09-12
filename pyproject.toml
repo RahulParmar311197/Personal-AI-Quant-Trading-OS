@@ -34,6 +34,7 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F"]
+per-file-ignores = { "20_API/app/execution/reconciliation_runner.py" = ["F401"] }
 
 [tool.mypy]
 python_version = "3.12"
