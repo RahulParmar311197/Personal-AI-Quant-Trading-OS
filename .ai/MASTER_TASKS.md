@@ -29,10 +29,10 @@
 | G6-003 | P0 | Create broker adapter contract | IN_PROGRESS |
 | G6-004 | P1 | Implement first broker adapter only after paper validation | IN_PROGRESS |
 | G6-004-H1 | P0 | Harden execution with durable order lifecycle, idempotency and fail-closed reconciliation | IN_PROGRESS |
-| G6-004-H2 | P0 | Validate transactional execution repository against PostgreSQL | IN_PROGRESS |
+| G6-004-H2 | P0 | Validate transactional execution repository against PostgreSQL | DONE |
 | G6-004-H3 | P0 | Add broker order/position snapshot reconciliation scheduler | DONE |
 | G6-004-H4 | P0 | Complete Upstox sandbox acceptance | IN_PROGRESS |
-| G6-004-H5 | P1 | Add durable execution audit history and fill ingestion | IN_PROGRESS |
+| G6-004-H5 | P1 | Add durable execution audit history and fill ingestion | DONE |
 | G7-001 | P1 | Create trading dashboard | BACKLOG |
 | G7-002 | P1 | Add observability and audit trail | BACKLOG |
 | G7-003 | P0 | Production acceptance and controlled rollout | BACKLOG |
@@ -45,7 +45,7 @@
 - Do not create or use feature branches for this project unless the user explicitly changes this policy.
 
 ## Current implementation sequence
-1. Obtain a clean PostgreSQL CI validation result on `main` for the durable execution repository and migration 0004.
+1. Clean CI validation for the durable execution repository, migration 0004, audit/fill history, and lint is complete on `main`.
 2. Run the Upstox sandbox acceptance harness only with explicitly supplied sandbox credentials.
-3. Complete and validate durable execution audit/fill history and integrate provider fill ingestion.
+3. Continue remaining execution-hardening work that is not credential-gated, especially durable local position/reconciliation state and execution failure-path hardening.
 4. Keep live trading disabled until controlled production acceptance criteria are satisfied.
