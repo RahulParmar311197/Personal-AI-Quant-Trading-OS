@@ -13,9 +13,10 @@ Architecture baseline: COMPLETE
 Backend foundation: IMPLEMENTED — runtime validation pending
 Database foundation: IMPLEMENTED — runtime validation pending
 Frontend foundation: IMPLEMENTED — runtime validation pending
+Docker development environment: IMPLEMENTED — build/runtime validation pending
 
 ## Repository assessment
-The repository preserves the canonical planning/governance framework and now contains the first application/database/frontend foundation implementations under the numbered implementation areas. Domain schemas and trading functionality remain intentionally unimplemented until their corresponding gates.
+The repository preserves the canonical planning/governance framework and now contains the first application, database, frontend and development-container foundations under the numbered implementation areas. Domain schemas and trading functionality remain intentionally unimplemented until their corresponding gates.
 
 ## Completed gates
 - G0 Project Definition
@@ -27,6 +28,7 @@ The repository preserves the canonical planning/governance framework and now con
 - G1-001 Create Python backend foundation — IN_PROGRESS (runtime validation pending)
 - G1-002 Create frontend foundation — IN_PROGRESS (runtime validation pending)
 - G1-003 Create database migration foundation — IN_PROGRESS (runtime validation pending)
+- G1-004 Add Docker development environment — IN_PROGRESS (build/runtime validation pending)
 
 ## Implemented foundation
 ### Backend
@@ -49,12 +51,19 @@ The repository preserves the canonical planning/governance framework and now con
 - Responsive base styling.
 - Vitest + Testing Library smoke-test setup.
 
+### Development environment
+- Backend and frontend development Dockerfiles.
+- PostgreSQL and Redis development services.
+- Health-gated service dependencies.
+- Docker build-context exclusions.
+- Make targets for Docker lifecycle and database migrations.
+
 ## Next execution order
-1. Locally run backend tests, lint and type checks.
+1. Locally validate backend tests, lint and type checks.
 2. Locally validate frontend install, test and production build.
-3. Locally validate Alembic offline/current/upgrade behavior against PostgreSQL.
-4. Implement G1-004 Docker development environment.
-5. Begin G2 database/domain schema work.
+3. Locally validate Docker Compose build/start and service health.
+4. Locally validate Alembic offline/current/upgrade behavior against PostgreSQL.
+5. Once G1 evidence is green, begin G2 database/domain schema work.
 
 ## Next gates
 G1 Foundation → G2 Database → G3 Market Data → G4 Multi-Timeframe → G5 Technical Analysis → G6 Price Action → G7 Market Structure → G8 SMC → G9 ICT → G10 Volume → G11 Options → G12 Macro/News → G13 Feature Engine → G14 Market Regime → G15 Strategy Engine → G16 Backtest → G17 Walk-Forward → G18 Monte Carlo → G19 AI/ML → G20 Decision → G21 Risk → G22 Paper Trading → G23 Broker → G24 Execution → G25 Portfolio → G26 Dashboard → G27 Monitoring → G28 Security → G29 Staging → G30 Production.
