@@ -6,20 +6,42 @@ Current phase: G1 — Foundation
 Live trading: DISABLED
 Paper trading: NOT IMPLEMENTED
 Broker execution: NOT IMPLEMENTED
-Application source: NOT IMPLEMENTED
+
 Framework bootstrap: COMPLETE
 Requirements baseline: COMPLETE
 Architecture baseline: COMPLETE
+Backend foundation: IMPLEMENTED — runtime validation pending
+Database foundation: IMPLEMENTED — runtime validation pending
+Frontend foundation: NOT YET IMPLEMENTED ON THIS BRANCH
 
 ## Repository assessment
-The repository contains preserved planning material under `master files/` plus the frozen framework and governance baseline. Application implementation has not yet been established under the numbered implementation areas.
+The repository preserves the canonical planning/governance framework and now contains the first application/database foundation implementation under the numbered implementation areas. Domain schemas and trading functionality remain intentionally unimplemented until their corresponding gates.
 
 ## Completed gates
 - G0 Project Definition
 
 ## Current gate
 - G1 Foundation
-- Next task: G1-001 Create Python backend foundation
+
+### Active tasks
+- G1-001 Create Python backend foundation — IN_PROGRESS (runtime validation pending)
+- G1-002 Create frontend foundation — BACKLOG
+- G1-003 Create database migration foundation — IN_PROGRESS (runtime validation pending)
+
+## Implemented database foundation
+- SQLAlchemy 2.x base/session layer.
+- PostgreSQL `psycopg` driver dependency.
+- Environment-driven `DATABASE_URL`.
+- Alembic configuration and migration environment.
+- Initial no-domain-table migration baseline.
+- Database contract tests.
+
+## Next execution order
+1. Locally run backend tests and lint/type checks.
+2. Locally validate Alembic offline/current/upgrade behavior against PostgreSQL.
+3. Implement G1-002 frontend foundation.
+4. Implement G1-004 Docker development environment.
+5. Begin G2 database/domain schema work.
 
 ## Next gates
 G1 Foundation → G2 Database → G3 Market Data → G4 Multi-Timeframe → G5 Technical Analysis → G6 Price Action → G7 Market Structure → G8 SMC → G9 ICT → G10 Volume → G11 Options → G12 Macro/News → G13 Feature Engine → G14 Market Regime → G15 Strategy Engine → G16 Backtest → G17 Walk-Forward → G18 Monte Carlo → G19 AI/ML → G20 Decision → G21 Risk → G22 Paper Trading → G23 Broker → G24 Execution → G25 Portfolio → G26 Dashboard → G27 Monitoring → G28 Security → G29 Staging → G30 Production.
