@@ -322,9 +322,16 @@ class ExecutionOrderRepository:
 
     @staticmethod
     def _fill_matches(row: ExecutionFill, request: FillIngestRequest) -> bool:
+        # Broker adapters may omit broker_order_id on a replay request. When
+        # omitted, the durable fill's broker-order mapping is still sufficient
+        # to establish identity; a supplied value must match exactly.
+        broker_order_matches = (
+            request.broker_order_id is None
+            or row.broker_order_id == request.broker_order_id
+        )
         return (
             row.client_order_id == request.client_order_id
-            and row.broker_order_id == request.broker_order_id
+            and broker_order_matches
             and row.instrument_id == request.instrument_id
             and row.side == request.side
             and row.quantity == request.quantity
