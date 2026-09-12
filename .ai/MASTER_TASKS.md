@@ -9,7 +9,7 @@
 | G1-002 | P0 | Create frontend foundation | IN_PROGRESS |
 | G1-003 | P0 | Create database migration foundation | IN_PROGRESS |
 | G1-004 | P1 | Add Docker development environment | IN_PROGRESS |
-| G2-001 | P0 | Define market-data canonical schema | BACKLOG |
+| G2-001 | P0 | Define market-data canonical schema | IN_PROGRESS |
 | G2-002 | P0 | Implement historical data ingestion contract | BACKLOG |
 | G2-003 | P1 | Implement live data adapter interface | BACKLOG |
 | G3-001 | P0 | Implement multi-timeframe aggregation | BACKLOG |
