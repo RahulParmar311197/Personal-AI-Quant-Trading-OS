@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from app.brokers.contracts import BrokerAdapter, BrokerOrderResult
 from app.execution.reconciliation import (
     LocalOrderSnapshot,
+    ReconciliationFinding,
     ReconciliationReport,
     ReconciliationService,
 )
@@ -28,8 +29,8 @@ class ReconciliationRun:
 class ReconciliationRunner:
     """Fetch broker state and compare it with durable local state.
 
-    The runner is intentionally read-only. A mismatch never triggers an order,
-    retry, cancellation, or mutation at the broker. Operators must resolve
+    The runner is strictly read-only. A mismatch never triggers an order,
+    retry, cancellation, or broker mutation. Operators must resolve
     discrepancies before execution is permitted to continue.
     """
 
@@ -46,12 +47,10 @@ class ReconciliationRunner:
     def run(self) -> ReconciliationRun:
         started = datetime.now(timezone.utc)
         if not self.broker.healthcheck():
-            from app.execution.reconciliation import ReconciliationFinding
-
             report = ReconciliationReport(
                 (
                     ReconciliationFinding(
-                        "BROKER_MISSING_LOCALLY",
+                        "BROKER_UNAVAILABLE",
                         "broker-health",
                         "broker healthcheck failed; reconciliation is inconclusive",
                     ),
@@ -72,9 +71,14 @@ class ReconciliationRunner:
             for row in self.repository.find_active()
             if row.broker_order_id
         )
-        broker_orders: tuple[BrokerOrderResult, ...] = tuple(
-            self.broker.get_order(item.broker_order_id) for item in local_orders
-        )
+
+        if self.broker.capabilities.list_orders:
+            broker_orders = self.broker.list_orders()
+        else:
+            broker_orders = tuple(
+                self.broker.get_order(item.broker_order_id) for item in local_orders
+            )
+
         report = self.service.reconcile_orders(local_orders, broker_orders)
         completed = datetime.now(timezone.utc)
         return ReconciliationRun(started, completed, report)
