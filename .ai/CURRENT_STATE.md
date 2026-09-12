@@ -3,7 +3,7 @@
 Date: 2026-09-12
 
 ## Repository state
-G5 strategy-layer foundation is now progressing on `framework/bootstrap`.
+Execution/broker hardening is now progressing on `framework/bootstrap` with live trading still disabled.
 
 ## Completed implementation work
 - G0-001 project control files and agent rules.
@@ -25,27 +25,25 @@ G5 strategy-layer foundation is now progressing on `framework/bootstrap`.
 - G4-002 execution cost model for fees, slippage and spread.
 - G4-003 chronological walk-forward validation contracts and tests.
 - G4-004 bootstrap Monte Carlo outcome robustness analysis and tests.
-- G5-001 strategy registry/base contracts: metadata, point-in-time context, non-executable strategy signals, versioned registry and tests.
+- G5 strategy/regime/decision/risk foundations.
+- G6 ML training/evaluation contracts, paper-trading simulator, provider-neutral broker contract and first Upstox adapter.
+- Execution hardening V1: normalized order lifecycle state machine, durable SQL execution-order schema/migration, idempotency contract, fail-closed order/position reconciliation service, tests and safety documentation.
 
 ## In progress
-- G1-001 Python backend foundation; runtime test execution is still required.
-- G1-002 frontend foundation; runtime install/build/test validation is still required.
-- G1-003 database migration foundation; runtime Alembic/database validation is still required.
-- G1-004 Docker development environment; build/runtime validation is still required.
-- G2/G3/G4 implementation tasks are present and tested by committed unit/contract suites; runtime validation remains pending.
-- G5-001 strategy registry/base interface; runtime validation remains pending.
+- Runtime validation of the accumulated backend/frontend/database/Docker/test suites remains required.
+- Durable lifecycle/idempotency repository wiring into `ExecutionEngine` remains pending.
+- Provider-neutral broker order-list/streaming snapshot contract is still needed for fully autonomous reconciliation.
+- Upstox sandbox end-to-end validation remains pending; no user credentials are stored or used by this repository workflow.
 
 ## Pending
-- G5-002 regime engine.
-- G5-003 decision engine.
-- G5-004 independent risk engine.
-- G6 ML, paper trading, broker contracts/adapters.
-- G7 dashboard, observability, production acceptance and controlled rollout.
+- G6 execution production hardening: transactional reservation, durable lifecycle persistence, broker snapshot/listing contract, reconciliation orchestration and sandbox acceptance.
+- G7 dashboard, observability/audit trail, production acceptance and controlled rollout.
 
 ## Known technical debt / follow-up
 - `BacktestEngine` still owns its original fee/slippage arithmetic instead of consuming the new `CostModel`; integrate before declaring G4 production-ready.
-- Runtime CI/local validation is still required.
+- Some earlier tests have weak typing/assertions and should be tightened during runtime validation.
 - Exchange-session-aware daily/weekly aggregation remains a future market-calendar enhancement.
+- Existing Upstox adapter uses V3 placement/cancel APIs but intentionally disables broker auto-slicing in V1.
 
 ## Blocked
 - Runtime validation cannot be performed through the connected GitHub repository interface; local execution or CI is required for runtime-dependent acceptance.
