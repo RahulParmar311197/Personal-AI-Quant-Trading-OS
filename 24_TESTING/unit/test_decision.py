@@ -50,8 +50,9 @@ def test_high_volatility_can_be_explicitly_enabled() -> None:
     engine = DecisionEngine(DecisionConfig(allow_high_volatility=True))
     result = engine.decide(signal("LONG"), regime("HIGH_VOLATILITY"),
                            ai_long_probability=Decimal("0.99"))
-    assert result.action == "NO_TRADE"
-    assert "aggregate score below decision threshold" in result.reasons
+    assert result.action == "LONG"
+    assert result.score >= Decimal("0.60")
+    assert "aggregate score meets decision threshold" in result.reasons
 
 
 def test_flat_and_missing_signal_do_not_trade() -> None:
