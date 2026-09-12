@@ -1,0 +1,40 @@
+Before asking:
+
+"Should I buy?"
+
+ask:
+
+"What kind of market am I in?"
+
+Example:
+
+                    MARKET
+                       │
+          ┌────────────┼────────────┐
+          ↓            ↓            ↓
+        TREND         RANGE       VOLATILE
+          │            │            │
+      ┌───┴───┐      ┌─┴─┐      ┌──┴──┐
+      ↓       ↓      ↓   ↓      ↓     ↓
+     Bull    Bear   Tight Wide  Event Normal
+
+Then strategies become regime-specific.
+
+For example:
+
+TRENDING
+ → trend-following strategies
+
+RANGING
+ → mean-reversion strategies
+
+BREAKOUT
+ → breakout/retest strategies
+
+HIGH VOLATILITY
+ → reduce position size / different strategy
+
+NEWS EVENT
+ → possibly NO TRADE
+
+This can dramatically improve the architecture compared with blindly running every strategy all the time.
