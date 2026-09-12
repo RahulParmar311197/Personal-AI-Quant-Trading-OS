@@ -69,6 +69,13 @@ class BrokerOrderResult:
 
 @dataclass(frozen=True)
 class BrokerFill:
+    """One provider trade normalized at the broker boundary.
+
+    ``broker_fill_id`` must be the provider's stable trade/fill identifier,
+    not a locally generated timestamp or sequence number. Client-order
+    identity is resolved from the durable broker-order mapping downstream.
+    """
+
     broker_fill_id: str
     broker_order_id: str
     instrument_id: str
@@ -81,6 +88,8 @@ class BrokerFill:
     def __post_init__(self) -> None:
         if not self.broker_fill_id.strip() or not self.broker_order_id.strip():
             raise ValueError("fill identifiers cannot be empty")
+        if not self.instrument_id.strip():
+            raise ValueError("instrument_id cannot be empty")
         if self.quantity <= 0 or self.price <= 0:
             raise ValueError("fill quantity and price must be positive")
         if self.fee < 0:
@@ -128,6 +137,14 @@ class BrokerAdapter(ABC):
     def list_orders(self) -> tuple[BrokerOrderResult, ...]:
         """Return normalized broker orders when the provider supports it."""
         raise NotImplementedError("broker does not support order listing")
+
+    def list_fills(self) -> tuple[BrokerFill, ...]:
+        """Return provider trades for the current reconciliation horizon."""
+        raise NotImplementedError("broker does not support fill listing")
+
+    def get_fills(self, broker_order_id: str) -> tuple[BrokerFill, ...]:
+        """Return provider trades for one broker order when supported."""
+        raise NotImplementedError("broker does not support order fill lookup")
 
     @abstractmethod
     def get_account(self) -> BrokerAccount:
