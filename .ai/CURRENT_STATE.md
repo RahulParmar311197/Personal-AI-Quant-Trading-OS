@@ -22,7 +22,7 @@ Execution/broker hardening is progressing on `main` with live trading still disa
 - G3-003 market-structure engine: confirmed swings, HH/HL/LH/LL, BOS/CHOCH and tests.
 - G3-004 deterministic SMC/ICT feature contracts: liquidity pools, FVG, displacement/order-block and premium/discount features plus tests.
 - G4-001 deterministic backtest engine with next-bar-open execution and no-look-ahead controls.
-- G4-002 execution cost model for fees, slippage and spread.
+- G4-002 canonical `CostModel` integrated directly into `BacktestEngine`, covering fees, adverse slippage and half-spread pricing.
 - G4-003 chronological walk-forward validation contracts and tests.
 - G4-004 bootstrap Monte Carlo outcome robustness analysis and tests.
 - G5 strategy/regime/decision/risk foundations.
@@ -39,16 +39,15 @@ Execution/broker hardening is progressing on `main` with live trading still disa
 
 ## In progress
 - Upstox sandbox end-to-end acceptance remains pending because no sandbox credential has been supplied; the harness is ready.
-- G6-004-H1 remaining hardening: durable local position/reconciliation state and execution exception-path handling.
-- Backtest cost-model integration remains technical debt before G4 can be called production-ready.
+- G6-004-H1 remaining hardening: durable local position/reconciliation state and execution exception-path handling has been implemented; final task-state normalization remains.
 
 ## Pending
 - G6-004-H4 Upstox sandbox acceptance.
-- Remaining execution hardening and durable position reconciliation.
+- Remaining execution hardening review and durable position reconciliation scalability hardening.
 - G7 dashboard, observability/audit trail, production acceptance and controlled rollout.
 
 ## Known technical debt / follow-up
-- `BacktestEngine` still owns its original fee/slippage arithmetic instead of consuming the new `CostModel`; integrate before declaring G4 production-ready.
+- Backtest cost-model integration is complete for the V1 fee/slippage/spread model; richer market-impact, queue and intrabar models remain future work.
 - Some earlier tests have weak typing/assertions and should be tightened during runtime validation.
 - Exchange-session-aware daily/weekly aggregation remains a future market-calendar enhancement.
 - Upstox order placement deliberately disables broker auto-slicing in V1 to preserve one internal order identity per broker result.
