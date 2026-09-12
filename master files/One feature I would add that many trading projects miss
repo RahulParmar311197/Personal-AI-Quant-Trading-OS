@@ -1,0 +1,33 @@
+trategy Research Lab
+
+Your platform should have a place where you can ask:
+
+"Test liquidity sweep + FVG
+on NIFTY 15-minute data
+during 2020–2026.
+Compare:
+- win rate
+- expectancy
+- max drawdown
+- Sharpe
+- profit factor
+- regime performance.
+"
+
+The system generates:
+
+Dataset
+ ↓
+Features
+ ↓
+Strategy
+ ↓
+Backtest
+ ↓
+Walk-forward
+ ↓
+Monte Carlo
+ ↓
+Report
+
+Then you decide whether it deserves paper/live testing.
