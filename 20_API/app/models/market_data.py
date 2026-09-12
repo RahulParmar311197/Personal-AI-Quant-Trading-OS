@@ -3,10 +3,10 @@
 from datetime import date, datetime
 from decimal import Decimal
 
-from sqlalchemy import BigInteger, Boolean, CheckConstraint, Date, ForeignKey, Index, Integer, Numeric, String, UniqueConstraint
+from sqlalchemy import BigInteger, Boolean, CheckConstraint, Date, ForeignKey, Index, Numeric, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.core.database import Base
+from app.core.database_base import Base
 
 
 class Instrument(Base):
@@ -29,27 +29,10 @@ class Instrument(Base):
     bars: Mapped[list["Bar"]] = relationship(back_populates="instrument")
 
     __table_args__ = (
-        UniqueConstraint(
-            "exchange",
-            "segment",
-            "symbol",
-            "expiry",
-            "strike",
-            "option_type",
-            name="uq_instruments_contract_identity",
-        ),
-        CheckConstraint(
-            "asset_type IN ('EQUITY', 'INDEX', 'FUTURE', 'OPTION', 'OTHER')",
-            name="ck_instruments_asset_type",
-        ),
-        CheckConstraint(
-            "option_type IS NULL OR option_type IN ('CE', 'PE')",
-            name="ck_instruments_option_type",
-        ),
-        CheckConstraint(
-            "asset_type = 'OPTION' OR (expiry IS NULL AND strike IS NULL AND option_type IS NULL)",
-            name="ck_instruments_option_fields",
-        ),
+        UniqueConstraint("exchange", "segment", "symbol", "expiry", "strike", "option_type", name="uq_instruments_contract_identity"),
+        CheckConstraint("asset_type IN ('EQUITY', 'INDEX', 'FUTURE', 'OPTION', 'OTHER')", name="ck_instruments_asset_type"),
+        CheckConstraint("option_type IS NULL OR option_type IN ('CE', 'PE')", name="ck_instruments_option_type"),
+        CheckConstraint("asset_type = 'OPTION' OR (expiry IS NULL AND strike IS NULL AND option_type IS NULL)", name="ck_instruments_option_fields"),
         Index("ix_instruments_exchange_symbol", "exchange", "symbol"),
     )
 
@@ -60,9 +43,7 @@ class Bar(Base):
     __tablename__ = "bars"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    instrument_id: Mapped[str] = mapped_column(
-        String(128), ForeignKey("instruments.instrument_id", ondelete="RESTRICT"), nullable=False
-    )
+    instrument_id: Mapped[str] = mapped_column(String(128), ForeignKey("instruments.instrument_id", ondelete="RESTRICT"), nullable=False)
     timeframe: Mapped[str] = mapped_column(String(16), nullable=False)
     event_time: Mapped[datetime] = mapped_column(nullable=False)
     ingested_at: Mapped[datetime] = mapped_column(nullable=False)
@@ -79,9 +60,7 @@ class Bar(Base):
     instrument: Mapped[Instrument] = relationship(back_populates="bars")
 
     __table_args__ = (
-        UniqueConstraint(
-            "instrument_id", "timeframe", "event_time", "source", name="uq_bars_point_in_time"
-        ),
+        UniqueConstraint("instrument_id", "timeframe", "event_time", "source", name="uq_bars_point_in_time"),
         CheckConstraint("high >= low", name="ck_bars_high_gte_low"),
         CheckConstraint("high >= open AND high >= close", name="ck_bars_high_gte_prices"),
         CheckConstraint("low <= open AND low <= close", name="ck_bars_low_lte_prices"),
