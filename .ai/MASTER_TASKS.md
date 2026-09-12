@@ -17,12 +17,12 @@
 | G3-003 | P0 | Implement market-structure engine | IN_PROGRESS |
 | G3-004 | P0 | Implement deterministic SMC/ICT feature contracts | IN_PROGRESS |
 | G4-001 | P0 | Build backtest engine with no-look-ahead controls | IN_PROGRESS |
-| G4-002 | P0 | Add realistic execution/cost model | IN_PROGRESS |
+| G4-002 | P0 | Add realistic execution/cost model | DONE |
 | G4-003 | P1 | Add walk-forward validation | IN_PROGRESS |
 | G4-004 | P1 | Add Monte Carlo analysis | IN_PROGRESS |
 | G5-001 | P0 | Create strategy registry and base interface | IN_PROGRESS |
 | G5-002 | P0 | Create regime engine | IN_PROGRESS |
-| G5-003 | P0 | Create decision engine | IN_PROGRESS |
+| G5-003 | P0 | Create decision engine with explicit high-volatility fail-closed guard | DONE |
 | G5-004 | P0 | Create independent risk engine | IN_PROGRESS |
 | G6-001 | P1 | Add ML training/evaluation pipeline | IN_PROGRESS |
 | G6-002 | P0 | Create paper-trading simulator | IN_PROGRESS |
@@ -45,7 +45,7 @@
 - Do not create or use feature branches for this project unless the user explicitly changes this policy.
 
 ## Current implementation sequence
-1. Clean CI validation for the durable execution repository, migration 0004, audit/fill history, and lint is complete on `main`.
-2. Run the Upstox sandbox acceptance harness only with explicitly supplied sandbox credentials.
-3. Continue remaining execution-hardening work that is not credential-gated, especially durable local position/reconciliation state and execution failure-path hardening.
+1. CI validation is the authoritative gate for recent execution and backtest/decision hardening changes.
+2. Upstox sandbox acceptance remains opt-in and credential-gated.
+3. Continue remaining execution hardening that is not credential-gated, then address the next highest-priority incomplete canonical task.
 4. Keep live trading disabled until controlled production acceptance criteria are satisfied.
