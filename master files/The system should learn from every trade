@@ -1,0 +1,42 @@
+After every trade:
+
+SIGNAL
+ ↓
+ORDER
+ ↓
+FILL
+ ↓
+TRADE
+ ↓
+EXIT
+ ↓
+ANALYSIS
+
+Store:
+
+Why did we enter?
+Which strategies agreed?
+What was market regime?
+What were features?
+What was AI probability?
+What was risk?
+What happened afterward?
+
+Then calculate:
+
+SMC performance
+ICT performance
+RSI performance
+Breakout performance
+Options-signal performance
+Regime performance
+Time-of-day performance
+Day-of-week performance
+Market performance
+Strategy performance
+
+Now you can discover:
+
+"This strategy performs well in trending markets but poorly during low-volatility ranges."
+
+That is far more powerful than searching for a mythical 80–90% accurate indicator.
