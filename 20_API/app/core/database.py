@@ -38,4 +38,5 @@ def get_db() -> Generator[Session, None, None]:
 # aggregate app.models package here: it imports models that depend on Base,
 # which creates a circular import during application/test initialization.
 from app.models.execution import ExecutionOrder  # noqa: E402,F401
+from app.models.execution_history import ExecutionAuditEvent, ExecutionFill  # noqa: E402,F401
 from app.models.market_data import Bar, Instrument  # noqa: E402,F401
