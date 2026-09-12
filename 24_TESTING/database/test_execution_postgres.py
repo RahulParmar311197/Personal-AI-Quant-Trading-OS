@@ -13,9 +13,10 @@ import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
+from app.execution.history import FillIngestRequest
 from app.execution.lifecycle import DurableOrderKey, IdempotencyConflict, OrderLifecycleEvent
 from app.execution.repository import ExecutionOrderRepository
-from app.models import ExecutionOrder, Instrument
+from app.models import ExecutionAuditEvent, ExecutionFill, ExecutionOrder, Instrument
 
 DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 pytestmark = pytest.mark.skipif(
@@ -54,6 +55,8 @@ def test_postgres_schema_contains_execution_constraints() -> None:
         ).scalars().all()
         assert "instruments" in tables
         assert "execution_orders" in tables
+        assert "execution_audit_events" in tables
+        assert "execution_fills" in tables
 
         constraints = connection.execute(
             text(
@@ -167,3 +170,65 @@ def test_postgres_lifecycle_and_monotonic_fill_persist() -> None:
         assert row is not None
         assert row.status == "FILLED"
         assert row.filled_quantity == Decimal("10.00000000")
+        audit = verify.scalars(
+            text("SELECT event_id FROM execution_audit_events WHERE client_order_id = 'pg-life'")
+        ).all()
+        assert len(audit) == 4
+
+
+def test_postgres_fill_ingestion_is_idempotent_and_updates_lifecycle() -> None:
+    engine = make_engine()
+    with Session(engine) as session:
+        with session.begin():
+            instrument_id = "NIFTY-POSTGRES-FILL"
+            seed_instrument(session, instrument_id)
+            repo = ExecutionOrderRepository(session)
+            repo.reserve(
+                key=DurableOrderKey("pg-fill", "strategy-a", NOW),
+                instrument_id=instrument_id,
+                side="BUY",
+                order_type="MARKET",
+                quantity=Decimal("10"),
+                created_at=NOW,
+            )
+            repo.transition("pg-fill", OrderLifecycleEvent("pg-fill", "SUBMITTED", NOW))
+            request = FillIngestRequest(
+                broker_fill_id="fill-1",
+                client_order_id="pg-fill",
+                broker_order_id="broker-1",
+                instrument_id=instrument_id,
+                side="BUY",
+                quantity=Decimal("4"),
+                fill_price=Decimal("100.25"),
+                fee=Decimal("1.10"),
+                event_time=NOW,
+                source="upstox.sandbox",
+            )
+            first = repo.ingest_fill(request)
+            second = repo.ingest_fill(request)
+            assert first.broker_fill_id == second.broker_fill_id
+
+    with Session(engine) as verify:
+        row = verify.get(ExecutionOrder, "pg-fill")
+        assert row is not None
+        assert row.status == "PARTIALLY_FILLED"
+        assert row.filled_quantity == Decimal("4.00000000")
+        assert verify.get(ExecutionFill, "fill-1") is not None
+        assert len(verify.scalars(text("SELECT broker_fill_id FROM execution_fills WHERE client_order_id = 'pg-fill'")).all()) == 1
+        assert len(verify.scalars(text("SELECT event_id FROM execution_audit_events WHERE client_order_id = 'pg-fill'")).all()) == 3
+
+        with pytest.raises(IdempotencyConflict):
+            # Same provider fill ID with different economics must never mutate history.
+            request = FillIngestRequest(
+                broker_fill_id="fill-1",
+                client_order_id="pg-fill",
+                broker_order_id="broker-1",
+                instrument_id="NIFTY-POSTGRES-FILL",
+                side="BUY",
+                quantity=Decimal("5"),
+                fill_price=Decimal("100.25"),
+                fee=Decimal("1.10"),
+                event_time=NOW,
+                source="upstox.sandbox",
+            )
+            ExecutionOrderRepository(verify).ingest_fill(request)
