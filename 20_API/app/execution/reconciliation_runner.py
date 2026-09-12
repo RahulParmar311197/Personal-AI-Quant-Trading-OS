@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
-from app.brokers.contracts import BrokerAdapter, BrokerOrderResult, BrokerPosition
+from app.brokers.contracts import BrokerAdapter
 from app.execution.reconciliation import (
     LocalOrderSnapshot,
     ReconciliationFinding,
@@ -27,12 +27,7 @@ class ReconciliationRun:
 
 
 class ReconciliationRunner:
-    """Fetch broker order/position state and compare it with durable local state.
-
-    The runner is strictly read-only. A mismatch never triggers an order,
-    retry, cancellation, or broker mutation. Operators must resolve
-    discrepancies before execution is permitted to continue.
-    """
+    """Fetch broker state and compare it with durable local state."""
 
     def __init__(
         self,
@@ -44,11 +39,8 @@ class ReconciliationRunner:
         self.broker = broker
         self.service = service or ReconciliationService()
 
-    def run(
-        self,
-        *,
-        local_positions: tuple[BrokerPosition, ...] = (),
-    ) -> ReconciliationRun:
+    def run(self) -> ReconciliationRun:
+        """Reconcile broker orders and positions against durable local state."""
         started = datetime.now(timezone.utc)
         if not self.broker.healthcheck():
             report = ReconciliationReport(
@@ -75,6 +67,7 @@ class ReconciliationRunner:
             for row in self.repository.find_active()
             if row.broker_order_id
         )
+        local_positions = self.repository.project_positions()
 
         try:
             if self.broker.capabilities.list_orders:
