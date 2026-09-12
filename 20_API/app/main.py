@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from app import __version__
 from app.core.config import get_settings
+from app.dashboard.router import router as dashboard_router
 
 settings = get_settings()
 
@@ -11,6 +12,7 @@ app = FastAPI(
     docs_url="/docs" if settings.environment != "production" else None,
     redoc_url="/redoc" if settings.environment != "production" else None,
 )
+app.include_router(dashboard_router, prefix=settings.api_prefix)
 
 
 @app.get("/health", tags=["system"])
