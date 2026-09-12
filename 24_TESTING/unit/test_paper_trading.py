@@ -47,7 +47,7 @@ def test_mark_to_market_and_equity() -> None:
     engine = PaperTradingEngine(Decimal("100000"))
     engine.submit_market_order("NIFTY", "LONG", Decimal("10"), ts(0), Decimal("100"))
     assert engine.mark_to_market("NIFTY", Decimal("105")) == Decimal("50")
-    assert engine.equity({"NIFTY": Decimal("105")}) == Decimal("99950")
+    assert engine.equity({"NIFTY": Decimal("105")}) == Decimal("100050")
 
 
 def test_invalid_order_is_rejected() -> None:
