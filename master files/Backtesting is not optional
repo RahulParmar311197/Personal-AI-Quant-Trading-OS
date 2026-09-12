@@ -1,0 +1,30 @@
+Your system should have:
+
+Historical Backtest
+       ↓
+Walk Forward
+       ↓
+Out-of-Sample
+       ↓
+Monte Carlo
+       ↓
+Paper Trading
+       ↓
+Small Live Capital
+       ↓
+Full Deployment
+
+And model:
+
+Brokerage
+Taxes/charges where relevant
+Slippage
+Spread
+Partial fills
+Liquidity
+Latency
+Contract expiry
+Corporate actions where applicable
+Market hours
+
+Otherwise a beautiful backtest can be meaningless.
