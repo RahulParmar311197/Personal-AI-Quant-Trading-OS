@@ -39,6 +39,21 @@ def test_unknown_regime_never_trades() -> None:
     assert result.action == "NO_TRADE"
 
 
+def test_high_volatility_is_blocked_by_default() -> None:
+    result = DecisionEngine().decide(signal("LONG"), regime("HIGH_VOLATILITY"),
+                                     ai_long_probability=Decimal("0.99"))
+    assert result.action == "NO_TRADE"
+    assert "high-volatility trading is disabled" in result.reasons
+
+
+def test_high_volatility_can_be_explicitly_enabled() -> None:
+    engine = DecisionEngine(DecisionConfig(allow_high_volatility=True))
+    result = engine.decide(signal("LONG"), regime("HIGH_VOLATILITY"),
+                           ai_long_probability=Decimal("0.99"))
+    assert result.action == "NO_TRADE"
+    assert "aggregate score below decision threshold" in result.reasons
+
+
 def test_flat_and_missing_signal_do_not_trade() -> None:
     engine = DecisionEngine()
     assert engine.decide(None, regime("TREND_UP")).action == "NO_TRADE"
