@@ -29,8 +29,8 @@
 | G6-003 | P0 | Create broker adapter contract | IN_PROGRESS |
 | G6-004 | P1 | Implement first broker adapter only after paper validation | IN_PROGRESS |
 | G6-004-H1 | P0 | Harden execution with durable order lifecycle, idempotency and fail-closed reconciliation | IN_PROGRESS |
-| G6-004-H2 | P0 | Validate transactional execution repository against PostgreSQL | BACKLOG |
-| G6-004-H3 | P0 | Add broker order/position snapshot reconciliation scheduler | IN_PROGRESS |
+| G6-004-H2 | P0 | Validate transactional execution repository against PostgreSQL | IN_PROGRESS |
+| G6-004-H3 | P0 | Add broker order/position snapshot reconciliation scheduler | DONE |
 | G6-004-H4 | P0 | Complete Upstox sandbox acceptance | IN_PROGRESS |
 | G6-004-H5 | P1 | Add durable execution audit history and fill ingestion | BACKLOG |
 | G7-001 | P1 | Create trading dashboard | BACKLOG |
@@ -38,7 +38,7 @@
 | G7-003 | P0 | Production acceptance and controlled rollout | BACKLOG |
 
 ## Current implementation sequence
-1. Complete runtime/CI validation of the execution repository and Upstox adapter.
+1. Complete PostgreSQL CI validation of the durable execution repository.
 2. Run the Upstox sandbox acceptance harness only with explicitly supplied sandbox credentials.
 3. Add durable execution audit/fill history before any production rollout.
 4. Keep live trading disabled until controlled production acceptance criteria are satisfied.
