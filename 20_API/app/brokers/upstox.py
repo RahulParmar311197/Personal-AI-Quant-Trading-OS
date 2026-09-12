@@ -1,7 +1,7 @@
 """Upstox sandbox adapter.
 
 The adapter targets Upstox order V3 for order submission/cancellation and the
-current V2 order-book/details/account endpoints for reconciliation reads.
+current V2 order-book/details/trade endpoints for reconciliation reads.
 No credentials are stored in source control. Live use requires an explicit
 non-sandbox base URL and remains blocked by the execution engine unless live
 execution is explicitly enabled.
@@ -9,22 +9,26 @@ execution is explicitly enabled.
 
 import json
 from dataclasses import dataclass
+from datetime import datetime
 from decimal import Decimal
 from typing import Any, Callable
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+from zoneinfo import ZoneInfo
 
 from app.brokers.contracts import (
     BrokerAccount,
     BrokerAdapter,
     BrokerCapabilities,
+    BrokerFill,
     BrokerOrderRequest,
     BrokerOrderResult,
     BrokerPosition,
 )
 
 Transport = Callable[[str, str, dict[str, str], bytes | None, float], tuple[int, dict[str, Any]]]
+_INDIA_TZ = ZoneInfo("Asia/Kolkata")
 
 
 @dataclass(frozen=True)
@@ -137,6 +141,34 @@ class UpstoxAdapter(BrokerAdapter):
             if isinstance(item, dict) and str(item.get("order_id", "")).strip()
         )
 
+    def list_fills(self) -> tuple[BrokerFill, ...]:
+        """Return all trades executed for the current trading day.
+
+        Upstox exposes a stable ``trade_id`` for each execution. Fees are not
+        part of this endpoint, so normalized fees remain zero until a charge
+        source is explicitly integrated; they are never inferred.
+        """
+        status_code, body = self._request("GET", "/v2/order/trades/get-trades-for-day", None)
+        if status_code >= 400:
+            raise RuntimeError(self._error_message(body, status_code))
+        data = body.get("data") or []
+        if not isinstance(data, list):
+            raise RuntimeError("Upstox trade response has invalid data shape")
+        return tuple(self._map_fill(item) for item in data if isinstance(item, dict))
+
+    def get_fills(self, broker_order_id: str) -> tuple[BrokerFill, ...]:
+        if not broker_order_id.strip():
+            raise ValueError("broker_order_id cannot be empty")
+        status_code, body = self._request(
+            "GET", f"/v2/order/trades?{urlencode({'order_id': broker_order_id})}", None
+        )
+        if status_code >= 400:
+            raise RuntimeError(self._error_message(body, status_code))
+        data = body.get("data") or []
+        if not isinstance(data, list):
+            raise RuntimeError("Upstox order-trade response has invalid data shape")
+        return tuple(self._map_fill(item) for item in data if isinstance(item, dict))
+
     def get_account(self) -> BrokerAccount:
         profile_status, profile = self._request("GET", "/v2/user/profile", None)
         if profile_status >= 400:
@@ -183,6 +215,43 @@ class UpstoxAdapter(BrokerAdapter):
         if quantity != quantity.to_integral_value():
             raise ValueError("Upstox adapter requires whole-number quantities")
         return int(quantity)
+
+    @staticmethod
+    def _parse_provider_time(value: Any) -> datetime:
+        raw = str(value or "").strip()
+        if not raw:
+            raise ValueError("Upstox trade is missing exchange_timestamp")
+        try:
+            parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        except ValueError:
+            try:
+                parsed = datetime.strptime(raw, "%d-%b-%Y %H:%M:%S")
+            except ValueError as exc:
+                raise ValueError(f"unsupported Upstox timestamp: {raw}") from exc
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=_INDIA_TZ)
+        return parsed
+
+    @classmethod
+    def _map_fill(cls, data: dict[str, Any]) -> BrokerFill:
+        trade_id = str(data.get("trade_id") or "").strip()
+        broker_order_id = str(data.get("order_id") or "").strip()
+        instrument_id = str(data.get("instrument_token") or "").strip()
+        side = str(data.get("transaction_type") or "").upper()
+        if not trade_id or not broker_order_id:
+            raise ValueError("Upstox trade is missing stable trade_id or order_id")
+        if side not in ("BUY", "SELL"):
+            raise ValueError("Upstox trade has invalid transaction_type")
+        return BrokerFill(
+            broker_fill_id=trade_id,
+            broker_order_id=broker_order_id,
+            instrument_id=instrument_id,
+            side=side,  # type: ignore[arg-type]
+            quantity=Decimal(str(data.get("quantity", 0))),
+            price=Decimal(str(data.get("average_price", 0))),
+            event_time=cls._parse_provider_time(data.get("exchange_timestamp")),
+            fee=Decimal("0"),
+        )
 
     @staticmethod
     def _map_order(data: dict[str, Any], broker_order_id: str) -> BrokerOrderResult:
