@@ -1,0 +1,43 @@
+This becomes the central brain.
+
+Instead of:
+
+AI says BUY
+
+produce something like:
+
+NIFTY
+────────────────────────────
+
+Market regime: TRENDING_BULL
+
+Structure:        +++
+SMC:              ++
+ICT:              ++
+Price Action:     +++
+Technical:        ++
+Volume:           ++
+Options:          +++
+Macro:            +
+Sentiment:        ++
+ML probability:   0.71
+
+Risk/reward:      1 : 2.4
+
+Decision:
+LONG
+
+Confidence:
+HIGH
+
+Reason:
+Multi-timeframe bullish structure + liquidity sweep +
+displacement + supportive options positioning.
+
+Invalidation:
+Below structural swing.
+
+Risk:
+0.50% account equity.
+
+That's much more useful than a simple green "BUY" button.
