@@ -1,0 +1,102 @@
+                    ┌─────────────────────────────┐
+                    │       MARKET UNIVERSE       │
+                    │                             │
+                    │ NSE / F&O / Crypto / Forex │
+                    │ Stocks / Indices / Options  │
+                    └──────────────┬──────────────┘
+                                   ↓
+                    ┌─────────────────────────────┐
+                    │       DATA PLATFORM         │
+                    │                             │
+                    │ OHLCV                       │
+                    │ Tick / Order Book            │
+                    │ Options Chain                │
+                    │ OI / IV / Greeks             │
+                    │ Corporate/Fundamental        │
+                    │ FII/DII                       │
+                    │ Macro                         │
+                    │ News / Sentiment              │
+                    └──────────────┬──────────────┘
+                                   ↓
+                    ┌─────────────────────────────┐
+                    │      MARKET ANALYTICS        │
+                    │                             │
+                    │ Technical Analysis           │
+                    │ Price Action                 │
+                    │ Market Structure             │
+                    │ SMC                           │
+                    │ ICT                           │
+                    │ Volume / Order Flow           │
+                    │ Volatility                    │
+                    │ Options Analytics             │
+                    │ Time / Session Analysis       │
+                    └──────────────┬──────────────┘
+                                   ↓
+                    ┌─────────────────────────────┐
+                    │     MARKET REGIME ENGINE    │
+                    │                             │
+                    │ Trending                     │
+                    │ Ranging                      │
+                    │ Breakout                     │
+                    │ High volatility              │
+                    │ Low volatility               │
+                    │ Bull / Bear / Neutral        │
+                    └──────────────┬──────────────┘
+                                   ↓
+              ┌────────────────────┴────────────────────┐
+              ↓                                         ↓
+   ┌──────────────────────┐                  ┌──────────────────────┐
+   │ DETERMINISTIC ENGINE │                  │     AI/ML ENGINE     │
+   │                      │                  │                      │
+   │ TA signals           │                  │ Probability models   │
+   │ SMC signals          │                  │ Classification        │
+   │ ICT signals          │                  │ Regime prediction     │
+   │ Price action         │                  │ Ranking               │
+   │ Options signals      │                  │ Anomaly detection     │
+   └──────────┬───────────┘                  └──────────┬───────────┘
+              └────────────────────┬────────────────────┘
+                                   ↓
+                    ┌─────────────────────────────┐
+                    │     DECISION ENGINE         │
+                    │                             │
+                    │ LONG                        │
+                    │ SHORT                       │
+                    │ NO TRADE                    │
+                    │                             │
+                    │ Confidence                  │
+                    │ Evidence                    │
+                    │ Expected value              │
+                    └──────────────┬──────────────┘
+                                   ↓
+                    ┌─────────────────────────────┐
+                    │       RISK ENGINE           │
+                    │                             │
+                    │ Position sizing             │
+                    │ Stop loss                   │
+                    │ Target                      │
+                    │ Max daily loss              │
+                    │ Max exposure                │
+                    │ Drawdown protection         │
+                    │ Kill switch                 │
+                    └──────────────┬──────────────┘
+                                   ↓
+                    ┌─────────────────────────────┐
+                    │     EXECUTION ENGINE        │
+                    │                             │
+                    │ Signal → Order              │
+                    │ Order → Fill                │
+                    │ Modify / Cancel             │
+                    │ Reconciliation              │
+                    └──────────────┬──────────────┘
+                                   ↓
+                    ┌─────────────────────────────┐
+                    │      PERFORMANCE ENGINE     │
+                    │                             │
+                    │ P&L                         │
+                    │ Win rate                    │
+                    │ Expectancy                  │
+                    │ Drawdown                    │
+                    │ Sharpe / Sortino            │
+                    │ Strategy attribution        │
+                    │ Model attribution           │
+                    └─────────────────────────────┘
