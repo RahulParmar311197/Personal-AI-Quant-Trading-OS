@@ -1,3 +1,5 @@
+import DashboardStatePanel from "./dashboard-state";
+
 const modules = [
   ["Market Data", "Canonical data and validation layer"],
   ["Analysis", "Technical, price action, SMC and ICT"],
@@ -30,34 +32,7 @@ export default function HomePage() {
       </header>
 
       <section className="dashboard-grid" aria-label="Trading system overview">
-        <article className="panel overview-panel">
-          <div className="panel-heading">
-            <div>
-              <p className="section-label">SYSTEM STATE</p>
-              <h2>Research mode</h2>
-            </div>
-            <span className="badge">SAFE</span>
-          </div>
-          <p className="muted">
-            The dashboard is read-only in this phase. Signal generation, risk authorization and
-            broker execution remain separate system boundaries.
-          </p>
-          <div className="metric-row">
-            <div>
-              <span className="metric-label">Execution</span>
-              <strong>Paper-first</strong>
-            </div>
-            <div>
-              <span className="metric-label">Risk gate</span>
-              <strong>Required</strong>
-            </div>
-            <div>
-              <span className="metric-label">High volatility</span>
-              <strong>Blocked</strong>
-            </div>
-          </div>
-        </article>
-
+        <DashboardStatePanel />
         <article className="panel controls-panel">
           <div className="panel-heading">
             <div>
