@@ -1,0 +1,33 @@
+Instead of one strategy, create a strategy registry.
+
+strategies/
+│
+├── trend/
+├── mean_reversion/
+├── breakout/
+├── price_action/
+├── smc/
+├── ict/
+├── options/
+├── volatility/
+└── machine_learning/
+
+Each strategy exposes the same interface:
+
+INPUT
+ ↓
+FEATURES
+ ↓
+SIGNAL
+ ↓
+ENTRY
+ ↓
+STOP
+ ↓
+TARGET
+ ↓
+CONFIDENCE
+ ↓
+EXPECTED VALUE
+
+Then the system can compare strategies objectively.
