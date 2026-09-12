@@ -20,7 +20,7 @@ ExecutionOrderStatus = Literal[
 
 _TERMINAL = {"FILLED", "CANCELLED", "REJECTED", "FAILED", "RECONCILED"}
 _TRANSITIONS: dict[ExecutionOrderStatus, frozenset[ExecutionOrderStatus]] = {
-    "CREATED": frozenset({"SUBMITTED", "FAILED"}),
+    "CREATED": frozenset({"SUBMITTED", "UNKNOWN", "FAILED"}),
     "SUBMITTED": frozenset({"ACKNOWLEDGED", "PARTIALLY_FILLED", "FILLED", "REJECTED", "UNKNOWN", "FAILED"}),
     "ACKNOWLEDGED": frozenset({"PARTIALLY_FILLED", "FILLED", "CANCEL_PENDING", "REJECTED", "UNKNOWN", "FAILED"}),
     "PARTIALLY_FILLED": frozenset({"PARTIALLY_FILLED", "FILLED", "CANCEL_PENDING", "UNKNOWN", "FAILED"}),
