@@ -96,10 +96,7 @@ def test_repository_persists_lifecycle_and_fills() -> None:
             quantity=Decimal("10"),
             created_at=NOW,
         )
-        repo.transition(
-            "c1",
-            OrderLifecycleEvent("c1", "SUBMITTED", NOW),
-        )
+        repo.transition("c1", OrderLifecycleEvent("c1", "SUBMITTED", NOW))
         repo.transition(
             "c1",
             OrderLifecycleEvent("c1", "PARTIALLY_FILLED", NOW),
@@ -128,10 +125,7 @@ def test_repository_rejects_non_monotonic_fill() -> None:
             quantity=Decimal("10"),
             created_at=NOW,
         )
-        repo.transition(
-            "c1",
-            OrderLifecycleEvent("c1", "SUBMITTED", NOW),
-        )
+        repo.transition("c1", OrderLifecycleEvent("c1", "SUBMITTED", NOW))
         repo.transition(
             "c1",
             OrderLifecycleEvent("c1", "PARTIALLY_FILLED", NOW),
@@ -161,7 +155,6 @@ def test_repository_ingests_provider_fill_and_replays_idempotently() -> None:
             "c1",
             OrderLifecycleEvent("c1", "SUBMITTED", NOW, broker_order_id="broker-7"),
         )
-
         fill = BrokerFill(
             broker_fill_id="trade-1",
             broker_order_id="broker-7",
@@ -178,6 +171,47 @@ def test_repository_ingests_provider_fill_and_replays_idempotently() -> None:
         assert repo.get("c1").filled_quantity == Decimal("4")
         assert repo.get("c1").status == "PARTIALLY_FILLED"
         assert len(repo.list_fills("c1")) == 1
+
+
+def test_repository_projects_net_position_from_durable_fills() -> None:
+    with make_session() as session:
+        seed_instrument(session)
+        repo = ExecutionOrderRepository(session)
+        for client_id, broker_id, side, quantity, price in (
+            ("buy-1", "broker-1", "BUY", "10", "100"),
+            ("sell-1", "broker-2", "SELL", "4", "110"),
+            ("buy-2", "broker-3", "BUY", "6", "120"),
+        ):
+            repo.reserve(
+                key=DurableOrderKey(client_id, "strategy-a", NOW),
+                instrument_id="NIFTY",
+                side=side,
+                order_type="MARKET",
+                quantity=Decimal(quantity),
+                created_at=NOW,
+            )
+            repo.transition(
+                client_id,
+                OrderLifecycleEvent("c1" if False else client_id, "SUBMITTED", NOW, broker_order_id=broker_id),
+            )
+            repo.ingest_broker_fill(
+                BrokerFill(
+                    broker_fill_id=client_id + "-fill",
+                    broker_order_id=broker_id,
+                    instrument_id="NIFTY",
+                    side=side,
+                    quantity=Decimal(quantity),
+                    price=Decimal(price),
+                    event_time=NOW,
+                ),
+                source="test",
+            )
+
+        positions = repo.project_positions()
+        assert len(positions) == 1
+        assert positions[0].instrument_id == "NIFTY"
+        assert positions[0].quantity == Decimal("12")
+        assert positions[0].average_price == Decimal("110")
 
 
 def test_repository_rejects_unknown_provider_order_fill() -> None:
