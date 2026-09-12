@@ -29,3 +29,9 @@ def get_db() -> Generator[Session, None, None]:
         yield db
     finally:
         db.close()
+
+
+# Keep model registration separate from the engine/session module. Model
+# modules import only ``database_base.Base``, so importing the registry here
+# cannot create a circular dependency.
+from app.models import registry as _model_registry  # noqa: E402,F401
