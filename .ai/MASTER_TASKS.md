@@ -17,7 +17,7 @@
 | G3-003 | P0 | Implement market-structure engine | IN_PROGRESS |
 | G3-004 | P0 | Implement deterministic SMC/ICT feature contracts | IN_PROGRESS |
 | G4-001 | P0 | Build backtest engine with no-look-ahead controls | IN_PROGRESS |
-| G4-002 | P0 | Add realistic execution/cost model | BACKLOG |
+| G4-002 | P0 | Add realistic execution/cost model | IN_PROGRESS |
 | G4-003 | P1 | Add walk-forward validation | BACKLOG |
 | G4-004 | P1 | Add Monte Carlo analysis | BACKLOG |
 | G5-001 | P0 | Create strategy registry and base interface | BACKLOG |
