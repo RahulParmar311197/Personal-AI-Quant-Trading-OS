@@ -17,6 +17,7 @@ def event(**overrides: object) -> LiveMarketDataEvent:
         "provider": "test",
         "provider_event_id": "evt-1",
         "event_time": datetime(2026, 9, 12, 9, 15, tzinfo=UTC),
+        "ingested_at": datetime(2026, 9, 12, 9, 15, 1, tzinfo=UTC),
         "payload": {"last_price": 25000},
     }
     values.update(overrides)
@@ -44,8 +45,9 @@ def test_guard_rejects_out_of_order_sequence() -> None:
 
 def test_guard_marks_old_valid_event_stale() -> None:
     guard = LiveEventGuard(stale_after_seconds=5)
-    old = event(provider_event_id="old", event_time=datetime.now(UTC) - timedelta(seconds=10))
-    accepted = guard.accept(old)
+    now = datetime(2026, 9, 12, 9, 15, 20, tzinfo=UTC)
+    old = event(provider_event_id="old", event_time=datetime(2026, 9, 12, 9, 15, 10, tzinfo=UTC), ingested_at=now)
+    accepted = guard.accept(old, now=now)
     assert accepted is not None
     assert accepted.quality == "STALE"
 
@@ -53,7 +55,7 @@ def test_guard_marks_old_valid_event_stale() -> None:
 def test_guard_rejects_future_event() -> None:
     guard = LiveEventGuard()
     with pytest.raises(ValueError, match="future"):
-        guard.accept(event(event_time=datetime.now(UTC) + timedelta(seconds=2)))
+        guard.accept(event(event_time=datetime.now(UTC) + timedelta(seconds=2), ingested_at=datetime.now(UTC) + timedelta(seconds=3)))
 
 
 def test_provider_contract_is_abstract() -> None:
