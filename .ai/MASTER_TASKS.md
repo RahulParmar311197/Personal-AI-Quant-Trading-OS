@@ -6,7 +6,7 @@
 | G0-002 | P0 | Freeze V1 requirements and acceptance criteria | DONE |
 | G0-003 | P0 | Define target architecture and boundaries | DONE |
 | G1-001 | P0 | Create Python backend foundation | IN_PROGRESS |
-| G1-002 | P0 | Create frontend foundation | BACKLOG |
+| G1-002 | P0 | Create frontend foundation | IN_PROGRESS |
 | G1-003 | P0 | Create database migration foundation | IN_PROGRESS |
 | G1-004 | P1 | Add Docker development environment | BACKLOG |
 | G2-001 | P0 | Define market-data canonical schema | BACKLOG |
