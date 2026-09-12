@@ -26,7 +26,7 @@
 | G5-004 | P0 | Create independent risk engine | IN_PROGRESS |
 | G6-001 | P1 | Add ML training/evaluation pipeline | IN_PROGRESS |
 | G6-002 | P0 | Create paper-trading simulator | IN_PROGRESS |
-| G6-003 | P0 | Create broker adapter contract | BACKLOG |
+| G6-003 | P0 | Create broker adapter contract | IN_PROGRESS |
 | G6-004 | P1 | Implement first broker adapter only after paper validation | BACKLOG |
 | G7-001 | P1 | Create trading dashboard | BACKLOG |
 | G7-002 | P1 | Add observability and audit trail | BACKLOG |
