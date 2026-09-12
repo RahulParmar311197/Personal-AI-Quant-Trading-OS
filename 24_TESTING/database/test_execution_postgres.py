@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from app.execution.history import FillIngestRequest
 from app.execution.lifecycle import DurableOrderKey, IdempotencyConflict, OrderLifecycleEvent
 from app.execution.repository import ExecutionOrderRepository
-from app.models import ExecutionAuditEvent, ExecutionFill, ExecutionOrder, Instrument
+from app.models import ExecutionFill, ExecutionOrder, Instrument
 
 DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 pytestmark = pytest.mark.skipif(
