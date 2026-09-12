@@ -30,16 +30,17 @@ Execution/broker hardening is progressing on `framework/bootstrap` with live tra
 - Execution hardening V1: normalized order lifecycle state machine, durable SQL execution-order schema/migration, idempotency contract, fail-closed order/position reconciliation service and orchestration.
 - Upstox reconciliation discovery: adapter now implements current-day order-book listing through `/v2/order/retrieve-all`, enabling broker-only order discovery rather than only targeted local-order lookups.
 - Execution reservation hardening: duplicate inserts are isolated with a SQLAlchemy SAVEPOINT so an idempotency race does not roll back the caller's outer transaction.
+- G6-004-H3 reconciliation runner/snapshot cadence contract and tests.
+- Database model import-cycle regression fix and explicit regression test.
 
 ## In progress
-- Runtime validation of the accumulated backend/frontend/database/Docker/test suites remains required.
-- PostgreSQL-specific transactional repository validation remains pending.
+- CI runtime validation is being rerun after fixing the SQLAlchemy model import cycle.
+- PostgreSQL-specific transactional repository validation is pending the clean CI run.
 - Upstox sandbox end-to-end acceptance remains pending; no user credentials are stored or used by this repository workflow.
 - Durable execution audit/fill history remains pending.
 
 ## Pending
 - G6-004-H2 PostgreSQL transactional validation.
-- G6-004-H3 reconciliation scheduling/operational cadence and runtime validation.
 - G6-004-H4 Upstox sandbox acceptance.
 - G6-004-H5 durable execution audit history and fill ingestion.
 - G7 dashboard, observability/audit trail, production acceptance and controlled rollout.
@@ -53,6 +54,7 @@ Execution/broker hardening is progressing on `framework/bootstrap` with live tra
 
 ## Blocked
 - Runtime validation cannot be performed through the connected GitHub repository interface; local execution or CI is required for runtime-dependent acceptance.
+- Upstox sandbox acceptance requires an explicitly supplied sandbox credential; no credential is available to this workflow.
 
 ## Critical safety status
 Live trading is disabled.
