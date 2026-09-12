@@ -1,0 +1,33 @@
+Since this is for your personal use, don't start with a huge multi-tenant SaaS.
+
+Build:
+
+PERSONAL TRADING OS
+
+with the architecture capable of becoming SaaS later.
+
+                 WEB / MOBILE UI
+                       │
+                       ▼
+                  API GATEWAY
+                       │
+       ┌───────────────┼───────────────┐
+       ↓               ↓               ↓
+   ANALYTICS        TRADING          ADMIN
+       │               │
+       ↓               ↓
+  AI/STRATEGY      RISK ENGINE
+                       │
+                       ↓
+                  EXECUTION
+                       │
+                       ↓
+                    BROKER
+
+Later:
+
+Personal
+   ↓
+Multi-user
+   ↓
+SaaS
