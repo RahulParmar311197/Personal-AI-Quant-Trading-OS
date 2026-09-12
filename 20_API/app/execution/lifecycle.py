@@ -34,6 +34,15 @@ _TRANSITIONS: dict[ExecutionOrderStatus, frozenset[ExecutionOrderStatus]] = {
 }
 
 
+def _utc(value: datetime | None) -> datetime | None:
+    """Normalize aware timestamps, including DB drivers returning naive UTC."""
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc)
+
+
 @dataclass(frozen=True)
 class OrderLifecycleEvent:
     client_order_id: str
@@ -68,7 +77,10 @@ class OrderStateMachine:
     def apply(self, state: OrderLifecycleState, event: OrderLifecycleEvent) -> OrderLifecycleState:
         if event.client_order_id != state.client_order_id:
             raise InvalidOrderTransition("event client_order_id does not match state")
-        if state.updated_at is not None and event.event_time < state.updated_at:
+        previous_time = _utc(state.updated_at)
+        event_time = _utc(event.event_time)
+        assert event_time is not None
+        if previous_time is not None and event_time < previous_time:
             raise InvalidOrderTransition("out-of-order lifecycle event")
         if event.status != state.status and event.status not in _TRANSITIONS[state.status]:
             raise InvalidOrderTransition(f"invalid transition {state.status} -> {event.status}")
@@ -76,7 +88,7 @@ class OrderStateMachine:
             client_order_id=state.client_order_id,
             status=event.status,
             broker_order_id=event.broker_order_id or state.broker_order_id,
-            updated_at=event.event_time.astimezone(timezone.utc),
+            updated_at=event_time,
             last_message=event.message,
         )
 
