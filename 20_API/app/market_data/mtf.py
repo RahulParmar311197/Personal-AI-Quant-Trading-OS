@@ -6,7 +6,7 @@ live data, provided the same finalized input bars are supplied.
 """
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Iterable
 
