@@ -22,11 +22,12 @@ def chronological_split(
     test_ratio: float = 0.20,
     embargo_bars: int = 0,
 ) -> DatasetSplit:
-    """Split without shuffling and leave an embargo between partitions.
+    """Split without shuffling and discard an embargo between partitions.
 
     ``embargo_bars`` should be at least the forward-label horizon when labels
-    overlap across adjacent observations. The embargo rows are discarded,
-    not reassigned to another split.
+    overlap across adjacent observations. The embargo is removed from the
+    end of the earlier partition, so its labels cannot reach into the next
+    partition's feature period.
     """
     if not examples:
         raise ValueError("examples cannot be empty")
@@ -48,14 +49,16 @@ def chronological_split(
         previous = timestamp
 
     n = len(ordered)
-    train_end = int(n * train_ratio)
-    validation_end = train_end + int(n * validation_ratio)
-    if train_end < 1 or validation_end <= train_end:
+    train_boundary = int(n * train_ratio)
+    validation_boundary = train_boundary + int(n * validation_ratio)
+    if train_boundary < 1 or validation_boundary <= train_boundary:
         raise ValueError("dataset is too small for requested split ratios")
 
-    validation_start = train_end + embargo_bars
-    test_start = validation_end + embargo_bars
-    if validation_start >= validation_end or test_start >= n:
+    train_end = train_boundary - embargo_bars
+    validation_start = train_boundary
+    validation_end = validation_boundary - embargo_bars
+    test_start = validation_boundary
+    if train_end < 1 or validation_end <= validation_start or test_start >= n:
         raise ValueError("dataset is too small for requested embargo")
 
     train = tuple(ordered[:train_end])
