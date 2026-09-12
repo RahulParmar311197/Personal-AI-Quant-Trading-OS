@@ -9,7 +9,7 @@ from app.brokers.contracts import BrokerFill
 from app.core.database import Base
 from app.execution.lifecycle import DurableOrderKey, IdempotencyConflict, OrderLifecycleEvent
 from app.execution.repository import ExecutionOrderRepository
-from app.models import Bar, ExecutionOrder, Instrument
+from app.models import ExecutionOrder, Instrument
 
 
 NOW = datetime(2026, 1, 1, tzinfo=timezone.utc)
