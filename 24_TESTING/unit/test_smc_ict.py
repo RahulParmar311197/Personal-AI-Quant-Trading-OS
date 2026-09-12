@@ -33,9 +33,9 @@ def test_equal_highs_create_buy_side_liquidity_pool() -> None:
     bars = [
         bar(0, "100", "105", "98", "100"),
         bar(1, "100", "110", "99", "108"),
-        bar(2, "108", "104", "96", "100"),
+        bar(2, "104", "104", "96", "100"),
         bar(3, "100", "110.02", "98", "108"),
-        bar(4, "108", "105", "97", "101"),
+        bar(4, "105", "105", "97", "101"),
     ]
     pools = detect_equal_liquidity(bars, tolerance=Decimal("0.001"))
     assert any(pool.side == "BUY_SIDE" for pool in pools)
