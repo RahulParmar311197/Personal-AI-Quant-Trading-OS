@@ -1,0 +1,38 @@
+This is critical.
+
+Strategy says BUY
+       ↓
+Risk Engine
+       ↓
+"Allowed?"
+
+It can reject the trade.
+
+For example:
+
+Strategy:
+BUY
+
+Risk Engine:
+Daily loss limit reached
+→ REJECT
+
+Or:
+
+Strategy:
+BUY
+
+Risk Engine:
+Position already exists
+→ REJECT
+
+Or:
+
+Strategy:
+BUY
+
+Risk Engine:
+Stop distance too large
+→ REJECT
+
+The AI should never be able to override the risk engine.
