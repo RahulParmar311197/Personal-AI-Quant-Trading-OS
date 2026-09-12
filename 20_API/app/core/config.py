@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     environment: str = Field(default="development")
     live_trading_enabled: bool = Field(default=False)
     api_prefix: str = Field(default="/api/v1")
+    database_url: str = Field(
+        default="postgresql+psycopg://postgres:postgres@localhost:5432/quant_trading_os"
+    )
 
     @property
     def live_trading_allowed(self) -> bool:
