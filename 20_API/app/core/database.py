@@ -34,6 +34,6 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-# Import models after Base is declared so Alembic can discover their metadata.
-# Kept at module bottom to avoid circular imports during model declaration.
-from app.models import Bar, Instrument  # noqa: E402,F401
+# Import every persistence model after Base is declared so direct metadata
+# consumers (including create_all-based test fixtures) see the full schema.
+from app.models import Bar, ExecutionOrder, Instrument  # noqa: E402,F401
