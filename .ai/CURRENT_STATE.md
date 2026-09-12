@@ -3,34 +3,23 @@
 Date: 2026-09-12
 
 ## Repository state
-Documentation-first bootstrap. Application code has not yet been established.
+Framework/control plane, V1 requirements baseline and target architecture baseline are established on `framework/bootstrap`.
 
 ## Completed
-- Product concept documented in existing repository history.
-- Architecture concept documented.
-- Framework direction defined.
+- G0-001 project control files and agent rules.
+- G0-002 V1 requirements, functional/non-functional requirements, user stories, acceptance criteria and traceability.
+- G0-003 target architecture, component boundaries, data flow, event flow and security architecture.
+- Existing planning material under `master files/` preserved.
 
 ## In progress
-- Framework bootstrap branch
-- Requirements baseline
-- Architecture baseline
+- Transition from G0 to G1 Foundation.
 
 ## Pending
-- Application skeleton
-- Data contracts
-- Database
-- Market-data adapters
-- Analytics engine
-- Strategy engine
-- Backtest engine
-- AI/ML engine
-- Decision engine
-- Risk engine
-- Paper trading
-- Broker integration
-- Frontend
-- Observability
-- Production deployment
+- Python backend foundation.
+- Frontend foundation.
+- Database migration foundation.
+- Docker development environment.
+- Canonical market-data contracts and all subsequent gates.
 
 ## Blocked
 None known.
