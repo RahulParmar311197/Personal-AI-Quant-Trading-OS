@@ -9,6 +9,25 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: quant_trading_os
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d quant_trading_os"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      TEST_DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/quant_trading_os
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/quant_trading_os
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,7 +40,10 @@ jobs:
       - name: Install backend and test dependencies
         run: python -m pip install --upgrade pip && python -m pip install -e ".[dev]"
 
-      - name: Run backend tests
+      - name: Apply database migrations
+        run: python -m alembic -c 22_DATABASE/alembic.ini upgrade head
+
+      - name: Run backend unit and database tests
         run: python -m pytest 24_TESTING/unit 24_TESTING/database -q
 
       - name: Lint
