@@ -5,10 +5,11 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
+from app.brokers.contracts import BrokerFill
+from app.core.database import Base
 from app.execution.lifecycle import DurableOrderKey, IdempotencyConflict, OrderLifecycleEvent
 from app.execution.repository import ExecutionOrderRepository
 from app.models import Bar, ExecutionOrder, Instrument
-from app.core.database import Base
 
 
 NOW = datetime(2026, 1, 1, tzinfo=timezone.utc)
@@ -142,3 +143,94 @@ def test_repository_rejects_non_monotonic_fill() -> None:
                 OrderLifecycleEvent("c1", "PARTIALLY_FILLED", NOW),
                 filled_quantity=Decimal("5"),
             )
+
+
+def test_repository_ingests_provider_fill_and_replays_idempotently() -> None:
+    with make_session() as session:
+        seed_instrument(session)
+        repo = ExecutionOrderRepository(session)
+        repo.reserve(
+            key=DurableOrderKey("c1", "strategy-a", NOW),
+            instrument_id="NIFTY",
+            side="BUY",
+            order_type="MARKET",
+            quantity=Decimal("10"),
+            created_at=NOW,
+        )
+        repo.transition(
+            "c1",
+            OrderLifecycleEvent("c1", "SUBMITTED", NOW, broker_order_id="broker-7"),
+        )
+
+        fill = BrokerFill(
+            broker_fill_id="trade-1",
+            broker_order_id="broker-7",
+            instrument_id="NIFTY",
+            side="BUY",
+            quantity=Decimal("4"),
+            price=Decimal("100.50"),
+            event_time=NOW,
+        )
+        first = repo.ingest_broker_fill(fill, source="upstox")
+        replay = repo.ingest_broker_fill(fill, source="upstox")
+
+        assert first.broker_fill_id == replay.broker_fill_id
+        assert repo.get("c1").filled_quantity == Decimal("4")
+        assert repo.get("c1").status == "PARTIALLY_FILLED"
+        assert len(repo.list_fills("c1")) == 1
+
+
+def test_repository_rejects_unknown_provider_order_fill() -> None:
+    with make_session() as session:
+        seed_instrument(session)
+        repo = ExecutionOrderRepository(session)
+        fill = BrokerFill(
+            broker_fill_id="trade-unknown",
+            broker_order_id="broker-missing",
+            instrument_id="NIFTY",
+            side="BUY",
+            quantity=Decimal("1"),
+            price=Decimal("100"),
+            event_time=NOW,
+        )
+        with pytest.raises(KeyError, match="broker-missing"):
+            repo.ingest_broker_fill(fill, source="upstox")
+
+
+def test_repository_rejects_reused_provider_fill_id_with_different_economics() -> None:
+    with make_session() as session:
+        seed_instrument(session)
+        repo = ExecutionOrderRepository(session)
+        repo.reserve(
+            key=DurableOrderKey("c1", "strategy-a", NOW),
+            instrument_id="NIFTY",
+            side="BUY",
+            order_type="MARKET",
+            quantity=Decimal("10"),
+            created_at=NOW,
+        )
+        repo.transition(
+            "c1",
+            OrderLifecycleEvent("c1", "SUBMITTED", NOW, broker_order_id="broker-7"),
+        )
+        first = BrokerFill(
+            broker_fill_id="trade-1",
+            broker_order_id="broker-7",
+            instrument_id="NIFTY",
+            side="BUY",
+            quantity=Decimal("4"),
+            price=Decimal("100"),
+            event_time=NOW,
+        )
+        repo.ingest_broker_fill(first, source="upstox")
+        conflicting = BrokerFill(
+            broker_fill_id="trade-1",
+            broker_order_id="broker-7",
+            instrument_id="NIFTY",
+            side="BUY",
+            quantity=Decimal("4"),
+            price=Decimal("101"),
+            event_time=NOW,
+        )
+        with pytest.raises(IdempotencyConflict):
+            repo.ingest_broker_fill(conflicting, source="upstox")
