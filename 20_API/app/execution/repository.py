@@ -206,15 +206,18 @@ class ExecutionOrderRepository:
             recorded_at=datetime.now(timezone.utc),
             source=request.source,
         )
-        self.session.add(fill)
+        nested = self.session.begin_nested()
         try:
+            self.session.add(fill)
             self.session.flush()
         except IntegrityError as exc:
-            self.session.rollback()
+            nested.rollback()
             winner = self.session.get(ExecutionFill, request.broker_fill_id)
             if winner is not None and self._fill_matches(winner, request):
                 return winner
             raise IdempotencyConflict("concurrent broker fill ingestion conflict") from exc
+        else:
+            nested.commit()
 
         next_status = "FILLED" if cumulative == order.requested_quantity else "PARTIALLY_FILLED"
         self.transition(
