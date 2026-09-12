@@ -29,6 +29,10 @@
 | G6-003 | P0 | Create broker adapter contract | IN_PROGRESS |
 | G6-004 | P1 | Implement first broker adapter only after paper validation | IN_PROGRESS |
 | G6-004-H1 | P0 | Harden execution with durable order lifecycle, idempotency and fail-closed reconciliation | IN_PROGRESS |
+| G6-004-H2 | P0 | Validate transactional execution repository against PostgreSQL | BACKLOG |
+| G6-004-H3 | P0 | Add broker order/position snapshot reconciliation scheduler | BACKLOG |
+| G6-004-H4 | P0 | Complete Upstox sandbox acceptance | BACKLOG |
+| G6-004-H5 | P1 | Add durable execution audit history and fill ingestion | BACKLOG |
 | G7-001 | P1 | Create trading dashboard | BACKLOG |
 | G7-002 | P1 | Add observability and audit trail | BACKLOG |
 | G7-003 | P0 | Production acceptance and controlled rollout | BACKLOG |
