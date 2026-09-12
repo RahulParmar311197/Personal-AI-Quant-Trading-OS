@@ -62,29 +62,35 @@ def detect_equal_liquidity(
     *,
     tolerance: Decimal = Decimal("0.0005"),
 ) -> list[LiquidityPool]:
-    """Detect equal highs/lows from consecutive confirmed swing points.
+    """Detect equal highs/lows from consecutive same-kind confirmed swings.
 
+    A high is compared with the previous confirmed high, and a low with the
+    previous confirmed low. Interleaved opposite-kind swings do not prevent
+    detection because liquidity pools are defined within the same swing kind.
     Tolerance is relative to price: |a-b| / max(|a|,|b|) <= tolerance.
     """
     if tolerance < 0:
         raise ValueError("tolerance must be non-negative")
     swings = _confirmed_swings(bars)
     pools: list[LiquidityPool] = []
-    for left, right in zip(swings, swings[1:]):
-        if left.kind != right.kind:
+    previous_by_kind: dict[str, SwingPoint] = {}
+    for swing in swings:
+        left = previous_by_kind.get(swing.kind)
+        previous_by_kind[swing.kind] = swing
+        if left is None:
             continue
-        denominator = max(abs(left.price), abs(right.price), Decimal("1e-18"))
-        relative = abs(left.price - right.price) / denominator
+        denominator = max(abs(left.price), abs(swing.price), Decimal("1e-18"))
+        relative = abs(left.price - swing.price) / denominator
         if relative > tolerance:
             continue
-        side: LiquiditySide = "BUY_SIDE" if left.kind == "HIGH" else "SELL_SIDE"
+        side: LiquiditySide = "BUY_SIDE" if swing.kind == "HIGH" else "SELL_SIDE"
         pools.append(
             LiquidityPool(
                 instrument_id=left.instrument_id,
                 side=side,
-                price=(left.price + right.price) / Decimal(2),
+                price=(left.price + swing.price) / Decimal(2),
                 first_time=left.event_time,
-                second_time=right.event_time,
+                second_time=swing.event_time,
                 tolerance=tolerance,
             )
         )
