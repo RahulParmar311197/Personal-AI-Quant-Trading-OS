@@ -34,6 +34,8 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-# Import every persistence model after Base is declared so direct metadata
-# consumers (including create_all-based test fixtures) see the full schema.
-from app.models import Bar, ExecutionOrder, Instrument  # noqa: E402,F401
+# Import concrete model modules after Base is declared. Do not import the
+# aggregate app.models package here: it imports models that depend on Base,
+# which creates a circular import during application/test initialization.
+from app.models.execution import ExecutionOrder  # noqa: E402,F401
+from app.models.market_data import Bar, Instrument  # noqa: E402,F401
