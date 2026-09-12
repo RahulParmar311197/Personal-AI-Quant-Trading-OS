@@ -13,6 +13,7 @@ ReconciliationKind = Literal[
     "STATUS_MISMATCH",
     "FILL_QUANTITY_MISMATCH",
     "POSITION_MISMATCH",
+    "BROKER_UNAVAILABLE",
 ]
 
 
@@ -62,39 +63,27 @@ class ReconciliationService:
         for broker_id, local in local_by_broker.items():
             broker = broker_by_id.get(broker_id)
             if broker is None:
-                findings.append(
-                    ReconciliationFinding(
-                        "LOCAL_MISSING_AT_BROKER",
-                        broker_id,
-                        "local order has no matching broker order snapshot",
-                    )
-                )
+                findings.append(ReconciliationFinding(
+                    "LOCAL_MISSING_AT_BROKER", broker_id,
+                    "local order has no matching broker order snapshot",
+                ))
                 continue
             if local.status != broker.status:
-                findings.append(
-                    ReconciliationFinding(
-                        "STATUS_MISMATCH",
-                        broker_id,
-                        f"local={local.status} broker={broker.status}",
-                    )
-                )
+                findings.append(ReconciliationFinding(
+                    "STATUS_MISMATCH", broker_id,
+                    f"local={local.status} broker={broker.status}",
+                ))
             if local.filled_quantity != broker.filled_quantity:
-                findings.append(
-                    ReconciliationFinding(
-                        "FILL_QUANTITY_MISMATCH",
-                        broker_id,
-                        f"local={local.filled_quantity} broker={broker.filled_quantity}",
-                    )
-                )
+                findings.append(ReconciliationFinding(
+                    "FILL_QUANTITY_MISMATCH", broker_id,
+                    f"local={local.filled_quantity} broker={broker.filled_quantity}",
+                ))
 
         for broker_id in broker_by_id.keys() - local_by_broker.keys():
-            findings.append(
-                ReconciliationFinding(
-                    "BROKER_MISSING_LOCALLY",
-                    broker_id,
-                    "broker order is absent from local durable state",
-                )
-            )
+            findings.append(ReconciliationFinding(
+                "BROKER_MISSING_LOCALLY", broker_id,
+                "broker order is absent from local durable state",
+            ))
 
         return ReconciliationReport(tuple(findings))
 
@@ -113,11 +102,8 @@ class ReconciliationService:
             left = local.get(instrument_id)
             right = broker.get(instrument_id)
             if left is None or right is None or left.quantity != right.quantity or left.average_price != right.average_price:
-                findings.append(
-                    ReconciliationFinding(
-                        "POSITION_MISMATCH",
-                        instrument_id,
-                        f"local={left} broker={right}",
-                    )
-                )
+                findings.append(ReconciliationFinding(
+                    "POSITION_MISMATCH", instrument_id,
+                    f"local={left} broker={right}",
+                ))
         return ReconciliationReport(tuple(findings))
