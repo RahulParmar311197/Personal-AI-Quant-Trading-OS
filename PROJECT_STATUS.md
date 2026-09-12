@@ -12,10 +12,10 @@ Requirements baseline: COMPLETE
 Architecture baseline: COMPLETE
 Backend foundation: IMPLEMENTED — runtime validation pending
 Database foundation: IMPLEMENTED — runtime validation pending
-Frontend foundation: NOT YET IMPLEMENTED ON THIS BRANCH
+Frontend foundation: IMPLEMENTED — runtime validation pending
 
 ## Repository assessment
-The repository preserves the canonical planning/governance framework and now contains the first application/database foundation implementation under the numbered implementation areas. Domain schemas and trading functionality remain intentionally unimplemented until their corresponding gates.
+The repository preserves the canonical planning/governance framework and now contains the first application/database/frontend foundation implementations under the numbered implementation areas. Domain schemas and trading functionality remain intentionally unimplemented until their corresponding gates.
 
 ## Completed gates
 - G0 Project Definition
@@ -25,10 +25,16 @@ The repository preserves the canonical planning/governance framework and now con
 
 ### Active tasks
 - G1-001 Create Python backend foundation — IN_PROGRESS (runtime validation pending)
-- G1-002 Create frontend foundation — BACKLOG
+- G1-002 Create frontend foundation — IN_PROGRESS (runtime validation pending)
 - G1-003 Create database migration foundation — IN_PROGRESS (runtime validation pending)
 
-## Implemented database foundation
+## Implemented foundation
+### Backend
+- FastAPI application foundation.
+- Environment-driven application settings.
+- Live-trading safety flag defaults to disabled.
+
+### Database
 - SQLAlchemy 2.x base/session layer.
 - PostgreSQL `psycopg` driver dependency.
 - Environment-driven `DATABASE_URL`.
@@ -36,10 +42,17 @@ The repository preserves the canonical planning/governance framework and now con
 - Initial no-domain-table migration baseline.
 - Database contract tests.
 
+### Frontend
+- Next.js/React application shell.
+- Strict TypeScript configuration.
+- Research-first landing page with explicit live-trading-disabled state.
+- Responsive base styling.
+- Vitest + Testing Library smoke-test setup.
+
 ## Next execution order
-1. Locally run backend tests and lint/type checks.
-2. Locally validate Alembic offline/current/upgrade behavior against PostgreSQL.
-3. Implement G1-002 frontend foundation.
+1. Locally run backend tests, lint and type checks.
+2. Locally validate frontend install, test and production build.
+3. Locally validate Alembic offline/current/upgrade behavior against PostgreSQL.
 4. Implement G1-004 Docker development environment.
 5. Begin G2 database/domain schema work.
 
