@@ -32,12 +32,13 @@ Execution/broker hardening is progressing on `framework/bootstrap` with live tra
 - Execution reservation hardening: duplicate inserts are isolated with a SQLAlchemy SAVEPOINT so an idempotency race does not roll back the caller's outer transaction.
 - G6-004-H3 reconciliation runner/snapshot cadence contract and tests.
 - Database model import-cycle regression fix and explicit regression test.
+- G6-004-H4 sandbox acceptance harness: opt-in integration test, environment-only credentials, sandbox lifecycle documentation and CI skip-by-default integration stage.
 
 ## In progress
-- CI runtime validation is being rerun after fixing the SQLAlchemy model import cycle.
+- CI runtime validation is pending a fresh GitHub Actions run after the import-cycle fix and sandbox harness changes.
 - PostgreSQL-specific transactional repository validation is pending the clean CI run.
-- Upstox sandbox end-to-end acceptance remains pending; no user credentials are stored or used by this repository workflow.
-- Durable execution audit/fill history remains pending.
+- Upstox sandbox end-to-end acceptance remains pending because no sandbox credential has been supplied; the harness is ready.
+- Durable execution audit/fill history is the next implementation task while credential-gated acceptance remains blocked.
 
 ## Pending
 - G6-004-H2 PostgreSQL transactional validation.
