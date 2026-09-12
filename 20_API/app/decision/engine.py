@@ -24,6 +24,7 @@ class DecisionConfig:
     ai_weight: Decimal = Decimal("0.20")
     minimum_score: Decimal = Decimal("0.60")
     minimum_strategy_confidence: Decimal = Decimal("0.50")
+    allow_high_volatility: bool = False
 
     def __post_init__(self) -> None:
         weights = (self.strategy_weight, self.regime_weight, self.ai_weight)
@@ -87,6 +88,8 @@ class DecisionEngine:
             return self._no_trade(event_time, regime, ai_score, "strategy explicitly requested FLAT")
         if regime.regime == "UNKNOWN":
             return self._no_trade(event_time, regime, ai_score, "market regime is UNKNOWN")
+        if regime.regime == "HIGH_VOLATILITY" and not self.config.allow_high_volatility:
+            return self._no_trade(event_time, regime, ai_score, "high-volatility trading is disabled")
 
         strategy_score = strategy_signal.confidence
         regime_score = _regime_alignment(strategy_signal.side, regime.regime)
