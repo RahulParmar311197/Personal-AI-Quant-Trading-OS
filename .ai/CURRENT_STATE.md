@@ -3,7 +3,7 @@
 Date: 2026-09-12
 
 ## Repository state
-Execution/broker hardening is now progressing on `framework/bootstrap` with live trading still disabled.
+Execution/broker hardening is progressing on `framework/bootstrap` with live trading still disabled.
 
 ## Completed implementation work
 - G0-001 project control files and agent rules.
@@ -27,23 +27,29 @@ Execution/broker hardening is now progressing on `framework/bootstrap` with live
 - G4-004 bootstrap Monte Carlo outcome robustness analysis and tests.
 - G5 strategy/regime/decision/risk foundations.
 - G6 ML training/evaluation contracts, paper-trading simulator, provider-neutral broker contract and first Upstox adapter.
-- Execution hardening V1: normalized order lifecycle state machine, durable SQL execution-order schema/migration, idempotency contract, fail-closed order/position reconciliation service, tests and safety documentation.
+- Execution hardening V1: normalized order lifecycle state machine, durable SQL execution-order schema/migration, idempotency contract, fail-closed order/position reconciliation service and orchestration.
+- Upstox reconciliation discovery: adapter now implements current-day order-book listing through `/v2/order/retrieve-all`, enabling broker-only order discovery rather than only targeted local-order lookups.
+- Execution reservation hardening: duplicate inserts are isolated with a SQLAlchemy SAVEPOINT so an idempotency race does not roll back the caller's outer transaction.
 
 ## In progress
 - Runtime validation of the accumulated backend/frontend/database/Docker/test suites remains required.
-- Durable lifecycle/idempotency repository wiring into `ExecutionEngine` remains pending.
-- Provider-neutral broker order-list/streaming snapshot contract is still needed for fully autonomous reconciliation.
-- Upstox sandbox end-to-end validation remains pending; no user credentials are stored or used by this repository workflow.
+- PostgreSQL-specific transactional repository validation remains pending.
+- Upstox sandbox end-to-end acceptance remains pending; no user credentials are stored or used by this repository workflow.
+- Durable execution audit/fill history remains pending.
 
 ## Pending
-- G6 execution production hardening: transactional reservation, durable lifecycle persistence, broker snapshot/listing contract, reconciliation orchestration and sandbox acceptance.
+- G6-004-H2 PostgreSQL transactional validation.
+- G6-004-H3 reconciliation scheduling/operational cadence and runtime validation.
+- G6-004-H4 Upstox sandbox acceptance.
+- G6-004-H5 durable execution audit history and fill ingestion.
 - G7 dashboard, observability/audit trail, production acceptance and controlled rollout.
 
 ## Known technical debt / follow-up
 - `BacktestEngine` still owns its original fee/slippage arithmetic instead of consuming the new `CostModel`; integrate before declaring G4 production-ready.
 - Some earlier tests have weak typing/assertions and should be tightened during runtime validation.
 - Exchange-session-aware daily/weekly aggregation remains a future market-calendar enhancement.
-- Existing Upstox adapter uses V3 placement/cancel APIs but intentionally disables broker auto-slicing in V1.
+- Upstox order placement deliberately disables broker auto-slicing in V1 to preserve one internal order identity per broker result.
+- Upstox's order book is current-day only; cross-session historical reconciliation requires separate durable local history and/or provider history endpoints.
 
 ## Blocked
 - Runtime validation cannot be performed through the connected GitHub repository interface; local execution or CI is required for runtime-dependent acceptance.
