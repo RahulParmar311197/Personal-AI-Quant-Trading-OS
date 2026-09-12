@@ -1,9 +1,9 @@
 """Transactional persistence boundary for execution orders and history.
 
 The repository is deliberately provider-neutral. It owns durable client-order
-identity, lifecycle persistence, audit history, and idempotent fill ingestion;
-broker adapters remain responsible only for translating normalized requests
-to provider APIs.
+identity, lifecycle persistence, audit history, idempotent fill ingestion, and
+point-in-time position projection from persisted fills; broker adapters remain
+responsible only for translating normalized requests to provider APIs.
 """
 
 from datetime import datetime, timezone
@@ -14,7 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.brokers.contracts import BrokerFill
+from app.brokers.contracts import BrokerFill, BrokerPosition
 from app.execution.history import FillIngestRequest
 from app.execution.lifecycle import (
     DurableOrderKey,
@@ -32,11 +32,11 @@ class OrderAlreadyExists(Exception):
 
 
 class ExecutionOrderRepository:
-    """SQLAlchemy repository with database-backed idempotency.
+    """SQLAlchemy repository with database-backed execution state.
 
     Callers own the transaction. Methods flush rather than commit so creation,
-    risk authorization bookkeeping, lifecycle changes, and fills can be
-    composed into a single transaction.
+    risk authorization bookkeeping, lifecycle changes, fills, and projections
+    can be composed into a single transaction.
     """
 
     def __init__(self, session: Session, state_machine: OrderStateMachine | None = None) -> None:
@@ -196,13 +196,7 @@ class ExecutionOrderRepository:
         )
 
     def ingest_fill(self, request: FillIngestRequest) -> ExecutionFill:
-        """Persist one broker fill exactly once and advance order fill state.
-
-        The broker fill ID is the idempotency key. Replaying the exact fill is
-        a no-op; reusing the same provider fill ID for different economics is
-        rejected. The fill row and order lifecycle update share the caller's
-        transaction.
-        """
+        """Persist one broker fill exactly once and advance order fill state."""
         existing = self.session.get(ExecutionFill, request.broker_fill_id)
         if existing is not None:
             if not self._fill_matches(existing, request):
@@ -264,6 +258,58 @@ class ExecutionOrderRepository:
         )
         return fill
 
+    def project_positions(self) -> tuple[BrokerPosition, ...]:
+        """Project net positions from durable fills in deterministic event order.
+
+        This is a read-only projection: persisted broker fills remain the source
+        of truth. A position is represented by signed net quantity and the
+        volume-weighted entry price of the remaining open quantity. When a fill
+        crosses through flat, the residual quantity starts a new entry price.
+        """
+        fills = self.session.scalars(
+            select(ExecutionFill).order_by(
+                ExecutionFill.event_time.asc(), ExecutionFill.broker_fill_id.asc()
+            )
+        ).all()
+        quantities: dict[str, Decimal] = {}
+        average_prices: dict[str, Decimal] = {}
+
+        for fill in fills:
+            signed_fill = fill.quantity if fill.side == "BUY" else -fill.quantity
+            current_quantity = quantities.get(fill.instrument_id, Decimal("0"))
+            current_average = average_prices.get(fill.instrument_id, Decimal("0"))
+            next_quantity = current_quantity + signed_fill
+
+            if current_quantity == 0 or (current_quantity > 0 and signed_fill > 0) or (
+                current_quantity < 0 and signed_fill < 0
+            ):
+                total_abs = abs(current_quantity) + abs(signed_fill)
+                average_prices[fill.instrument_id] = (
+                    current_average * abs(current_quantity) + fill.fill_price * abs(signed_fill)
+                ) / total_abs
+            elif next_quantity == 0:
+                average_prices.pop(fill.instrument_id, None)
+            elif (current_quantity > 0 and next_quantity > 0) or (
+                current_quantity < 0 and next_quantity < 0
+            ):
+                # Closing part of an existing position does not change its entry price.
+                average_prices[fill.instrument_id] = current_average
+            else:
+                # The fill crossed through flat; its residual opens at this fill price.
+                average_prices[fill.instrument_id] = fill.fill_price
+
+            quantities[fill.instrument_id] = next_quantity
+
+        return tuple(
+            BrokerPosition(
+                instrument_id=instrument_id,
+                quantity=quantity,
+                average_price=average_prices[instrument_id],
+            )
+            for instrument_id, quantity in sorted(quantities.items())
+            if quantity != 0
+        )
+
     def list_audit_events(self, client_order_id: str) -> tuple[ExecutionAuditEvent, ...]:
         rows = self.session.scalars(
             select(ExecutionAuditEvent)
@@ -322,9 +368,6 @@ class ExecutionOrderRepository:
 
     @staticmethod
     def _fill_matches(row: ExecutionFill, request: FillIngestRequest) -> bool:
-        # Broker adapters may omit broker_order_id on a replay request. When
-        # omitted, the durable fill's broker-order mapping is still sufficient
-        # to establish identity; a supplied value must match exactly.
         broker_order_matches = (
             request.broker_order_id is None
             or row.broker_order_id == request.broker_order_id
