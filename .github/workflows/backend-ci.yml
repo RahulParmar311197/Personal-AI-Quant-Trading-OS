@@ -46,5 +46,8 @@ jobs:
       - name: Run backend unit and database tests
         run: python -m pytest 24_TESTING/unit 24_TESTING/database -q
 
+      - name: Run broker integration harness (sandbox credentials optional)
+        run: python -m pytest 24_TESTING/integration -q
+
       - name: Lint
         run: python -m ruff check 20_API 24_TESTING
