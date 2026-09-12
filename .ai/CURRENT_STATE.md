@@ -3,23 +3,23 @@
 Date: 2026-09-12
 
 ## Repository state
-Framework/control plane, V1 requirements baseline and target architecture baseline are established on `framework/bootstrap`.
+G0 is complete. G1 Foundation is in progress on `framework/bootstrap`.
 
 ## Completed
 - G0-001 project control files and agent rules.
 - G0-002 V1 requirements, functional/non-functional requirements, user stories, acceptance criteria and traceability.
 - G0-003 target architecture, component boundaries, data flow, event flow and security architecture.
-- Existing planning material under `master files/` preserved.
+- G1 foundation configuration and initial FastAPI health application files added.
 
 ## In progress
-- Transition from G0 to G1 Foundation.
+- G1-001 Python backend foundation.
+- Remaining G1 foundation work includes execution validation and any missing baseline backend structure required by acceptance criteria.
 
 ## Pending
-- Python backend foundation.
-- Frontend foundation.
-- Database migration foundation.
-- Docker development environment.
-- Canonical market-data contracts and all subsequent gates.
+- G1-002 frontend foundation.
+- G1-003 database migration foundation.
+- G1-004 Docker development environment.
+- G2 onward market data through production gates.
 
 ## Blocked
 None known.
