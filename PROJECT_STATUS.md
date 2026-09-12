@@ -2,7 +2,7 @@
 
 Project: Personal AI Quant Trading OS
 Branch: framework/bootstrap
-Current phase: G1 — Foundation
+Current phase: G2 — Database / Market Data Contract
 Live trading: DISABLED
 Paper trading: NOT IMPLEMENTED
 Broker execution: NOT IMPLEMENTED
@@ -14,59 +14,44 @@ Backend foundation: IMPLEMENTED — runtime validation pending
 Database foundation: IMPLEMENTED — runtime validation pending
 Frontend foundation: IMPLEMENTED — runtime validation pending
 Docker development environment: IMPLEMENTED — build/runtime validation pending
+G2 canonical market-data contract: IMPLEMENTED — executable persistence mapping pending
 
 ## Repository assessment
-The repository preserves the canonical planning/governance framework and now contains the first application, database, frontend and development-container foundations under the numbered implementation areas. Domain schemas and trading functionality remain intentionally unimplemented until their corresponding gates.
+The repository preserves the canonical planning/governance framework and now contains application, database, frontend, development-container and market-data contract foundations. Domain schemas and trading functionality remain intentionally gated.
 
 ## Completed gates
 - G0 Project Definition
 
 ## Current gate
-- G1 Foundation
+- G2 Database / Market Data Contract
 
 ### Active tasks
 - G1-001 Create Python backend foundation — IN_PROGRESS (runtime validation pending)
 - G1-002 Create frontend foundation — IN_PROGRESS (runtime validation pending)
 - G1-003 Create database migration foundation — IN_PROGRESS (runtime validation pending)
 - G1-004 Add Docker development environment — IN_PROGRESS (build/runtime validation pending)
+- G2-001 Define market-data canonical schema — IN_PROGRESS (contract baseline implemented)
 
-## Implemented foundation
-### Backend
-- FastAPI application foundation.
-- Environment-driven application settings.
-- Live-trading safety flag defaults to disabled.
-
-### Database
-- SQLAlchemy 2.x base/session layer.
-- PostgreSQL `psycopg` driver dependency.
-- Environment-driven `DATABASE_URL`.
-- Alembic configuration and migration environment.
-- Initial no-domain-table migration baseline.
-- Database contract tests.
-
-### Frontend
-- Next.js/React application shell.
-- Strict TypeScript configuration.
-- Research-first landing page with explicit live-trading-disabled state.
-- Responsive base styling.
-- Vitest + Testing Library smoke-test setup.
-
-### Development environment
-- Backend and frontend development Dockerfiles.
-- PostgreSQL and Redis development services.
-- Health-gated service dependencies.
-- Docker build-context exclusions.
-- Make targets for Docker lifecycle and database migrations.
+## G2 contract baseline
+- Canonical instrument identity defined.
+- OHLCV bar contract defined.
+- Tick/quote contract defined.
+- Order-book snapshot contract defined.
+- Options snapshot contract defined.
+- Data-quality states and validation rules defined.
+- UTC and point-in-time semantics defined.
+- Provider provenance and revision rules defined.
 
 ## Next execution order
-1. Locally validate backend tests, lint and type checks.
-2. Locally validate frontend install, test and production build.
-3. Locally validate Docker Compose build/start and service health.
-4. Locally validate Alembic offline/current/upgrade behavior against PostgreSQL.
-5. Once G1 evidence is green, begin G2 database/domain schema work.
+1. Implement executable market-data domain models and persistence mapping from the canonical contract.
+2. Add migration for market-data identity and OHLCV foundations.
+3. Add validation tests covering timestamp, OHLC, duplicate and quality rules.
+4. Implement G2-002 historical ingestion contract.
+5. Implement G2-003 live adapter interface without enabling live trading.
+6. Continue to G3 multi-timeframe aggregation.
 
 ## Next gates
-G1 Foundation → G2 Database → G3 Market Data → G4 Multi-Timeframe → G5 Technical Analysis → G6 Price Action → G7 Market Structure → G8 SMC → G9 ICT → G10 Volume → G11 Options → G12 Macro/News → G13 Feature Engine → G14 Market Regime → G15 Strategy Engine → G16 Backtest → G17 Walk-Forward → G18 Monte Carlo → G19 AI/ML → G20 Decision → G21 Risk → G22 Paper Trading → G23 Broker → G24 Execution → G25 Portfolio → G26 Dashboard → G27 Monitoring → G28 Security → G29 Staging → G30 Production.
+G1 Foundation → G2 Database → G3 Multi-Timeframe → G4 Technical Analysis → G5 Price Action → G6 Market Structure → G7 SMC → G8 ICT → G9 Volume → G10 Options → G11 Macro/News → G12 Feature Engine → G13 Market Regime → G14 Strategy Engine → G15 Backtest → G16 Walk-Forward → G17 Monte Carlo → G18 AI/ML → G19 Decision → G20 Risk → G21 Paper Trading → G22 Broker → G23 Execution → G24 Portfolio → G25 Dashboard → G26 Monitoring → G27 Security → G28 Staging → G29 Production.
 
 ## Safety state
 Automatic live trading MUST remain disabled until explicit production acceptance criteria are satisfied.
