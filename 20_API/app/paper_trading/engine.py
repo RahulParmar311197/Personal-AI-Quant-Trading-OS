@@ -77,6 +77,7 @@ class PaperTradingEngine:
         return fill
 
     def mark_to_market(self, instrument_id: str, market_price: Decimal) -> Decimal:
+        """Return unrealized P&L for one currently open position."""
         if market_price <= 0:
             raise ValueError("market_price must be positive")
         position = self._find_position(instrument_id)
@@ -85,8 +86,20 @@ class PaperTradingEngine:
         return position.quantity * (market_price - position.average_price)
 
     def equity(self, prices: dict[str, Decimal]) -> Decimal:
-        unrealized = sum(self.mark_to_market(symbol, price) for symbol, price in prices.items())
-        return self.account.cash + unrealized
+        """Return mark-to-market account equity.
+
+        Cash already reflects trade consideration. Therefore equity is cash
+        plus the current market value of open positions, rather than cash plus
+        unrealized P&L (which would double-count the position cost).
+        """
+        market_value = Decimal("0")
+        for instrument_id, market_price in prices.items():
+            if market_price <= 0:
+                raise ValueError("market prices must be positive")
+            position = self._find_position(instrument_id)
+            if position is not None and position.quantity != 0:
+                market_value += position.quantity * market_price
+        return self.account.cash + market_value
 
     def _execution_price(self, side: str, market_price: Decimal) -> Decimal:
         slippage = self.config.slippage_bps / Decimal("10000")
