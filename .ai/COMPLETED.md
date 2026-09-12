@@ -12,7 +12,11 @@
 - Alembic migration configuration and environment added under `22_DATABASE/`.
 - Initial no-domain-table migration baseline added.
 - Database foundation contract tests added under `24_TESTING/database/`.
+- Next.js/React frontend foundation added under `21_FRONTEND/`.
+- Strict TypeScript configuration and responsive research-first shell added.
+- Frontend Vitest + Testing Library smoke-test setup added.
 
 ## Safety
 - Live trading remains disabled.
 - Domain schemas remain deferred until their canonical contracts are defined in later gates.
+- Frontend contains no live-order path.
