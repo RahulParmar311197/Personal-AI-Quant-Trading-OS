@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Callable, Literal
 
+from app.backtest.costs import CostModel
 from app.market_data.contracts import HistoricalBar
 
 Side = Literal["LONG", "SHORT"]
@@ -20,14 +21,22 @@ class BacktestConfig:
     risk_per_trade: Decimal = Decimal("0.01")
     fee_bps: Decimal = Decimal("0")
     slippage_bps: Decimal = Decimal("0")
+    spread_bps: Decimal = Decimal("0")
 
     def __post_init__(self) -> None:
         if self.initial_capital <= 0:
             raise ValueError("initial_capital must be positive")
         if not Decimal("0") <= self.risk_per_trade <= Decimal("1"):
             raise ValueError("risk_per_trade must be between 0 and 1")
-        if self.fee_bps < 0 or self.slippage_bps < 0:
-            raise ValueError("fee_bps and slippage_bps cannot be negative")
+        if min(self.fee_bps, self.slippage_bps, self.spread_bps) < 0:
+            raise ValueError("cost parameters cannot be negative")
+
+    def cost_model(self) -> CostModel:
+        return CostModel(
+            fee_bps=self.fee_bps,
+            slippage_bps=self.slippage_bps,
+            spread_bps=self.spread_bps,
+        )
 
 
 @dataclass(frozen=True)
@@ -68,6 +77,7 @@ class BacktestEngine:
 
     def __init__(self, config: BacktestConfig | None = None) -> None:
         self.config = config or BacktestConfig()
+        self.cost_model = self.config.cost_model()
 
     def run(
         self,
@@ -112,10 +122,9 @@ class BacktestEngine:
         return BacktestResult(self.config.initial_capital, capital, tuple(fills), tuple(trades))
 
     def _fill(self, signal: Signal, execution_bar: HistoricalBar) -> Fill:
-        direction = Decimal("1") if signal.side == "LONG" else Decimal("-1")
-        multiplier = Decimal("1") + direction * self.config.slippage_bps / Decimal("10000")
-        price = execution_bar.open * multiplier
-        fee = abs(price * signal.quantity) * self.config.fee_bps / Decimal("10000")
+        direction: Side = "LONG" if signal.side == "LONG" else "SHORT"
+        price = self.cost_model.execution_price(execution_bar.open, direction)
+        fee = self.cost_model.fee(price, signal.quantity)
         return Fill(execution_bar.event_time.astimezone(timezone.utc), signal.side, signal.quantity, price, fee)
 
     @staticmethod
