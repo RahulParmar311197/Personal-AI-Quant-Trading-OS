@@ -56,7 +56,6 @@ class PaperTradingEngine:
         order_id = client_order_id or f"paper-order-{self._order_counter}"
         if any(order.order_id == order_id for order in self.account.orders):
             raise ValueError("duplicate order id")
-        order = PaperOrder(order_id, instrument_id, side, quantity, event_time, "OPEN")
         fill_price = self._execution_price(side, market_price)
         notional = quantity * fill_price
         fee = notional * self.config.fee_bps / Decimal("10000")
